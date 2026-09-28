@@ -159,9 +159,20 @@ withheld, so an off-topic answer (e.g. "90 + 70 = 160") never appears even brief
   LLM. Numbers are re-checked against the *original dataset* text of cited articles,
   independently of the app's verifier, plus a rule assertion per category.
 
-Latest results: **303 passed** (unit + integration), **27/27 eval checks passed**
-(12 reference queries + out-of-scope and borderline questions);
+Latest results: **304 passed** (unit + integration), **27/27 eval checks passed**
+(12 reference queries + out-of-scope and borderline questions), re-run on the index rebuilt
+after the cleaning rewrite (2026-09-28: 117 articles, 272 chunks, 21 stale points removed);
 `ruff`, `mypy --strict`, ESLint, and 9 UI tests clean.
+
+### Known issues
+
+- **Relevance labels are not stable across LLM runs for multi-company articles.** Running the
+  extractor three times on identical text gave different primary tickers for e.g. "The race
+  for AI will only get 'faster and cheaper'" (MSFT/AMZN/GOOGL/IBM/ORCL primary in 1 of 3 runs).
+  Re-enriching after the cleaning change flipped 9 articles' primary/stub labels this way; the
+  cleaning itself was ruled out (same label distribution on old and new text). Consequence:
+  Microsoft sits exactly on the FULL-coverage threshold and dropped from FULL to LIMITED.
+  Fix under consideration: majority vote over several extraction runs, cached.
 
 ## Production readiness
 

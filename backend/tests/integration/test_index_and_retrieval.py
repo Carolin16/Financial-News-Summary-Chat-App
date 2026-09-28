@@ -143,6 +143,25 @@ class TestIndexer:
         assert (report.written, report.unchanged, report.stale_removed) == (1, 1, 2)
         assert embedder.embedded_texts == 1
 
+    def test_article_that_shrinks_leaves_no_orphaned_chunks(self, storage, sparse_encoder):
+        # Deterministic IDs alone would leave chunks 1..n of the old version behind; the
+        # indexer must delete them when the article now produces fewer chunks.
+        small_chunker = Chunker(60, 0, "cl100k_base", company_name=lambda t: t)
+        long_text = " ".join(f"Intel sentence number {i} about foundry deals." for i in range(40))
+        long_version = article("intel-long", "Intel deal talks", long_text, primary=["INTC"])
+        short_version = long_version.model_copy(update={"text": "Intel shares jumped 16%."})
+        long_chunks = small_chunker.chunk(long_version)
+        assert len(long_chunks) >= 3
+
+        index(storage, small_chunker, sparse_encoder, [long_version])
+        report, _ = index(storage, small_chunker, sparse_encoder, [short_version])
+
+        client = QdrantClient(path=storage)
+        stored = {str(p.id) for p in client.scroll(COLLECTION, limit=100)[0]}
+        client.close()
+        assert stored == {c.chunk_id for c in small_chunker.chunk(short_version)}
+        assert report.stale_removed == len(long_chunks) - 1
+
 
 class TestHybridRetriever:
     async def test_exact_tokens_rank_the_matching_article_first(self, retriever):
