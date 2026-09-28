@@ -91,6 +91,13 @@ pattern = 'PREMIUM\s+Upgrade to read this .*?Already have a subscription\?\s*Sig
 truncation = true
 
 [[noise_rules]]
+name = "editorial_update_note"
+category = "ui_chrome"
+# Newswire revision note, e.g. "(Updates with the company's response in the third paragraph.)".
+# It describes the edit, not the story, and would otherwise count as content.
+pattern = '\(Updates? (?:with|to) [^()]{1,120}\)'
+
+[[noise_rules]]
 name = "continue_reading"
 category = "truncation"
 pattern = '\bContinue Reading\b'
@@ -112,8 +119,9 @@ pattern = '\bView Comments\b\s*\|?'
 [[noise_rules]]
 name = "yahoo_video_carousel"
 category = "ui_chrome"
-# "Related Videos 02:34 <headline> Yahoo Finance Video 26 minutes ago 00:57 ..."
-pattern = 'Related Videos(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s+.+?\s+Yahoo Finance Video\s+\d+\s+(?:minutes?|hours?|days?)\s+ago)+'
+# "Related Videos 02:34 <headline> <source> 26 minutes ago 07:02 ..." Items come from any
+# source (Yahoo Finance Video, Bloomberg, ...), so the source is not hard-coded.
+pattern = 'Related Videos(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s+.{1,200}?\s+\d+\s+(?:minutes?|hours?|days?)\s+ago)+'
 
 # ---------------------------------------------------------------------------------------
 # Publisher footers: stripped to the end of the text, guarded by [footer_safety].

@@ -1,7 +1,16 @@
 """Collapses repeated articles so coverage is not overstated.
 
-Two passes: exact duplicates share a link (the same story filed under several tickers);
-near-duplicates are re-published "Update:" versions of the same headline.
+Two passes over *cleaned* articles:
+
+1. Exact duplicates share a link: the same story filed under several ticker keys (13 links
+   carry 20 extra entries in the dataset). Copies can differ in scrape-time details (video
+   timestamps, a live price quote), so the most complete copy is kept.
+2. Near-duplicates are re-publications of the same headline under a new link (e.g. an
+   "Update:" version). They must match on headline *and* body; stub bodies are truncated
+   mid-sentence, so for stubs the headline alone decides.
+
+The kept article records every ticker key it was filed under (`source_keys`) and the links
+it absorbed (`merged_links`). Both are provenance only and never used for relevance.
 """
 
 import itertools
@@ -15,7 +24,7 @@ _WORD = re.compile(r"\w+")
 
 
 class Deduplicator:
-    """Merges exact and near-duplicate articles, keeping the best version of each."""
+    """Merges exact and near-duplicate articles, keeping the most complete version."""
 
     def __init__(self, body_threshold: float, title_threshold: float, shingle_size: int) -> None:
         """Configure similarity thresholds (Jaccard, 0-1) and body shingle length in words."""
@@ -24,26 +33,30 @@ class Deduplicator:
         self._shingle_size = shingle_size
 
     def deduplicate(self, articles: Sequence[Article]) -> list[Article]:
-        """Return unique articles in first-seen order with `source_tickers` merged."""
+        """Return unique articles in first-seen order with provenance merged."""
         return self._merge_near_duplicates(self._merge_by_link(articles))
 
     def _merge_by_link(self, articles: Sequence[Article]) -> list[Article]:
         by_link: dict[str, Article] = {}
         for article in articles:
             existing = by_link.get(article.link)
-            by_link[article.link] = (
-                article if existing is None else _merge(keep=existing, drop=article)
-            )
+            if existing is None:
+                by_link[article.link] = article
+            else:
+                keep, drop = preferred_version(existing, article)
+                by_link[article.link] = _merge(keep=keep, drop=drop)
         return list(by_link.values())
 
     def _merge_near_duplicates(self, articles: list[Article]) -> list[Article]:
         survivors = list(articles)
         for first, second in itertools.combinations(articles, 2):
-            if first not in survivors or second not in survivors:
+            current = {a.link: a for a in survivors}
+            if first.link not in current or second.link not in current:
                 continue
+            first, second = current[first.link], current[second.link]
             if not self.are_near_duplicates(first, second):
                 continue
-            keep, drop = _preferred_version(first, second)
+            keep, drop = preferred_version(first, second)
             survivors[survivors.index(keep)] = _merge(keep=keep, drop=drop)
             survivors.remove(drop)
         return survivors
@@ -53,7 +66,6 @@ class Deduplicator:
 
         The headline check is required because templated series (analyst-note teasers,
         "intrinsic value" reports) share most of their body text yet are different news.
-        Stub bodies are truncated mid-sentence, so for stubs the headline alone decides.
         """
         title_similarity = _jaccard(_title_tokens(first.title), _title_tokens(second.title))
         if title_similarity < self._title_threshold:
@@ -66,18 +78,29 @@ class Deduplicator:
         return body_similarity >= self._body_threshold
 
 
-def _preferred_version(first: Article, second: Article) -> tuple[Article, Article]:
-    """Prefer an explicitly updated version, then the longer text."""
-    first_updated = bool(_UPDATE_PREFIX.match(first.title))
-    second_updated = bool(_UPDATE_PREFIX.match(second.title))
-    if first_updated != second_updated:
-        return (first, second) if first_updated else (second, first)
-    return (first, second) if len(first.text) >= len(second.text) else (second, first)
+def preferred_version(first: Article, second: Article) -> tuple[Article, Article]:
+    """Return (keep, drop), preferring the version with more content.
+
+    On a tie an "Update:" version wins, then the one seen first. More content wins over
+    recency because only the text we hold can ground an answer.
+    """
+    first_words, second_words = len(first.text.split()), len(second.text.split())
+    if first_words != second_words:
+        return (first, second) if first_words > second_words else (second, first)
+    if _is_update(second) and not _is_update(first):
+        return second, first
+    return first, second
+
+
+def _is_update(article: Article) -> bool:
+    return bool(_UPDATE_PREFIX.match(article.title))
 
 
 def _merge(keep: Article, drop: Article) -> Article:
-    tickers = list(dict.fromkeys([*keep.source_tickers, *drop.source_tickers]))
-    return keep.model_copy(update={"source_tickers": tickers})
+    keys = list(dict.fromkeys([*keep.source_keys, *drop.source_keys]))
+    links = [link for link in [*keep.merged_links, drop.link, *drop.merged_links]]
+    merged_links = [link for link in dict.fromkeys(links) if link != keep.link]
+    return keep.model_copy(update={"source_keys": keys, "merged_links": merged_links})
 
 
 def _title_tokens(title: str) -> set[str]:

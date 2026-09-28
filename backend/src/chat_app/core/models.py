@@ -77,9 +77,14 @@ class Article(BaseModel):
     title: str
     link: str
     text: str
-    source_tickers: list[str] = Field(
+    source_keys: list[str] = Field(
         default_factory=list,
-        description="Source-file keys the article was listed under; provenance only.",
+        description="Source-file ticker keys the article was filed under. Provenance only: "
+        "never used to decide relevance.",
+    )
+    merged_links: list[str] = Field(
+        default_factory=list,
+        description="Links of near-duplicate versions merged into this article (provenance).",
     )
     is_stub: bool = False
     metadata: ArticleMetadata = Field(default_factory=ArticleMetadata)

@@ -60,7 +60,7 @@ def test_pipeline_cleans_dedupes_flags_and_enriches():
     intel, nvidia = articles
     assert intel.title == "Intel jumps today"
     assert intel.text == body
-    assert intel.source_tickers == ["INTC", "AAPL"]
+    assert intel.source_keys == ["INTC", "AAPL"]
     assert intel.metadata.primary_tickers == ["INTEL"]
     assert nvidia.is_stub
 

@@ -17,7 +17,7 @@ def make_article():
         title: str = "Intel shares jump",
         link: str = "https://example.com/a",
         text: str = "Intel shares rose 5% after a report.",
-        source_tickers: list[str] | None = None,
+        source_keys: list[str] | None = None,
         is_stub: bool = False,
         metadata: ArticleMetadata | None = None,
         article_id: str | None = None,
@@ -27,7 +27,7 @@ def make_article():
             title=title,
             link=link,
             text=text,
-            source_tickers=source_tickers or ["INTC"],
+            source_keys=source_keys or ["INTC"],
             is_stub=is_stub,
             metadata=metadata or ArticleMetadata(),
         )

@@ -56,7 +56,7 @@ class ArticlePipeline:
             title=cleaned.title,
             link=cleaned.link,
             text=cleaned.text,
-            source_tickers=[cleaned.ticker],
+            source_keys=[cleaned.ticker],
             is_stub=self._stub_detector.is_stub(cleaned),
         )
 
