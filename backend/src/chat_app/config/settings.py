@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     data_path: Path = Field(default=Path("../data/stock_news.json"))
     enrichment_cache_path: Path = Field(default=Path("../data/enrichment_cache.json"))
     tickers_path: Path = Field(default=_PACKAGE_CONFIG_DIR / "tickers.json")
+    cleaning_rules_path: Path = Field(
+        default=_PACKAGE_CONFIG_DIR.parent / "ingestion" / "cleaning" / "cleaning_rules.toml"
+    )
 
     # --- LLM / embeddings ---
     openai_api_key: SecretStr = Field(default=SecretStr(""))

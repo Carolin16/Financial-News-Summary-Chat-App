@@ -6,7 +6,8 @@ import pytest
 
 from chat_app.core.models import ArticleMetadata, RawArticle
 from chat_app.ingestion.article_pipeline import ArticlePipeline
-from chat_app.ingestion.cleaner import TextCleaner
+from chat_app.ingestion.cleaning.config import CleaningConfig
+from chat_app.ingestion.cleaning.factory import build_text_cleaner
 from chat_app.ingestion.deduplicator import Deduplicator
 from chat_app.ingestion.loader import JsonArticleRepository
 from chat_app.ingestion.stub_detector import StubDetector
@@ -32,7 +33,7 @@ class TickerFromTitle:
 def build(repository, stub_min_words: int = 5) -> ArticlePipeline:
     return ArticlePipeline(
         repository=repository,
-        cleaner=TextCleaner(),
+        cleaner=build_text_cleaner(CleaningConfig.from_toml(), company_terms=[]),
         stub_detector=StubDetector(min_words=stub_min_words),
         deduplicator=Deduplicator(body_threshold=0.6, title_threshold=0.8, shingle_size=5),
         extractor=TickerFromTitle(),
@@ -70,6 +71,8 @@ def test_real_dataset_profile():
     result = build(JsonArticleRepository(DATASET_PATH), stub_min_words=80).run()
 
     assert len(result) == 117  # 118 unique links minus one "Update:" re-publication
-    assert sum(a.is_stub for a in result) == 23
+    # 23 paywalled/teaser articles, plus one Yahoo video blurb that is thin (77 words) once
+    # its "Related Videos" carousel is no longer counted as content.
+    assert sum(a.is_stub for a in result) == 24
     for noise in ["275%", "READ NEXT", "Trending:", "Don't Miss", "View Comments", "newsletter"]:
         assert not any(noise in a.text for a in result), noise

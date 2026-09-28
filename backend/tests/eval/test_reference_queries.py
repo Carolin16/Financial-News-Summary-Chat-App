@@ -13,10 +13,12 @@ import pytest
 
 from chat_app.api.container import Container
 from chat_app.config.settings import get_settings
+from chat_app.core.ticker_registry import TickerRegistry
 from chat_app.generation import messages
 from chat_app.generation.events import FinalEvent, MetaEvent
 from chat_app.generation.grounding import extract_numbers
-from chat_app.ingestion.cleaner import TextCleaner, normalize_characters
+from chat_app.ingestion.cleaning.config import CleaningConfig
+from chat_app.ingestion.cleaning.factory import build_text_cleaner
 from chat_app.ingestion.loader import JsonArticleRepository
 
 pytestmark = pytest.mark.eval
@@ -79,11 +81,13 @@ def results() -> dict[int, tuple[MetaEvent, FinalEvent]]:
 @pytest.fixture(scope="module")
 def article_text_by_link() -> dict[str, str]:
     """Original dataset text (title + cleaned body) keyed by link."""
-    cleaner = TextCleaner()
-    return {
-        raw.link: f"{normalize_characters(raw.title)}\n{cleaner.clean(raw.full_text)}"
-        for raw in JsonArticleRepository(get_settings().data_path).load()
-    }
+    settings = get_settings()
+    cleaner = build_text_cleaner(
+        CleaningConfig.from_toml(settings.cleaning_rules_path),
+        TickerRegistry.from_json(settings.tickers_path).company_terms(),
+    )
+    cleaned = (cleaner.clean(raw) for raw in JsonArticleRepository(settings.data_path).load())
+    return {c.link: f"{c.title}\n{c.text}" for c in cleaned}
 
 
 def llm_body(final: FinalEvent) -> str:

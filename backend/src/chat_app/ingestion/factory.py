@@ -4,7 +4,8 @@ from chat_app.config.settings import Settings
 from chat_app.core.ticker_registry import TickerRegistry
 from chat_app.generation.llm_client import OpenAILlmClient
 from chat_app.ingestion.article_pipeline import ArticlePipeline
-from chat_app.ingestion.cleaner import TextCleaner
+from chat_app.ingestion.cleaning.config import CleaningConfig
+from chat_app.ingestion.cleaning.factory import build_text_cleaner
 from chat_app.ingestion.deduplicator import Deduplicator
 from chat_app.ingestion.enrichment_cache import CachedMetadataExtractor
 from chat_app.ingestion.loader import JsonArticleRepository
@@ -34,7 +35,10 @@ def build_article_pipeline(
     """Assemble the article preparation pipeline from configuration."""
     return ArticlePipeline(
         repository=JsonArticleRepository(settings.data_path),
-        cleaner=TextCleaner(),
+        cleaner=build_text_cleaner(
+            CleaningConfig.from_toml(settings.cleaning_rules_path),
+            TickerRegistry.from_json(settings.tickers_path).company_terms(),
+        ),
         stub_detector=StubDetector(settings.stub_min_words),
         deduplicator=Deduplicator(
             body_threshold=settings.near_duplicate_threshold,

@@ -46,6 +46,14 @@ class TickerRegistry:
         """All tracked tickers."""
         return list(self._companies)
 
+    def company_terms(self) -> list[str]:
+        """Every ticker and alias, e.g. for detecting company mentions in text."""
+        return [
+            term
+            for ticker, company in self._companies.items()
+            for term in (ticker, *company.aliases)
+        ]
+
     def name_for(self, ticker: str) -> str:
         """Display name for a ticker, or the ticker itself if untracked."""
         company = self._companies.get(ticker.upper())

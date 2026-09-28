@@ -77,11 +77,28 @@ primary; "Intel Breakup…" filed under AAPL is primary INTC.
   118 unique links → **117 articles**, with the Amazon "Update:" re-publication merged.
 - Stubs keep their key fact only in the title ("DBS … Price Target to $160 From $175"), so
   titles go into every chunk's contextual header and count as citable source text.
-- Promotional sentences ("our newsletter … has returned 275%"), cross-promo blocks
-  (`READ NEXT:`, `Trending:`, `Don't Miss:`), and UI chrome are removed; a regression test
-  guards that genuine figures such as "returned over $30 billion to shareholders" survive.
-- **23 stubs** are flagged (teaser markers or < 80 words) and labelled `PARTIAL` in prompts;
-  answers relying on them say so.
+- **No mojibake exists in this file** (0 occurrences of `â€`, `Â`, `Ã`), although the brief
+  expects it; what looks garbled in a non-UTF-8 console is curly quotes and non-breaking
+  spaces. The encoding-repair step (ftfy) stays in the pipeline defensively for other feeds.
+- Cleaning is a pipeline of small steps behind a `CleaningStep` interface (encoding repair →
+  punctuation → sentence spacing → symbols → noise blocks → URLs → repeated title →
+  whitespace), with every pattern in `ingestion/cleaning/cleaning_rules.toml`. It removes
+  13.8% of the text: UI chrome, cross-promotion, sponsored lines, publisher footers,
+  disclaimers, image credits, and contact details.
+- Promo blocks are removed whole, not just their marker. Headline lists often run into real
+  text with no punctuation ("…Analyst Ratings The Chinese startup may be…"), so the end is
+  detected from the switch from Title-Case headlines to sentence-case prose.
+- Footers are stripped to the end only after a guard confirms the tail holds no article
+  content (company names, tickers, or numbers in full sentences outside known boilerplate).
+- Promotional sentences ("our newsletter … has returned 275%") are removed, keyed on the
+  promo wording, never on "returned N%", which appears in four genuine figures.
+- Invariants are tested over the whole dataset: cleaning is idempotent, never creates a
+  number, and keeps every exchange ticker and € / ¥ figure in article content.
+- The same punctuation normaliser (`core/text_normalization.py`) is applied to LLM output
+  before numbers are verified, so both sides compare identical characters.
+- **24 of 118 source entries** carry a truncation signal (paywall or "Continue Reading");
+  after deduplication 24 articles are stubs, including one video blurb that is only 77 words
+  once its "Related Videos" carousel is removed. Stubs are labelled `PARTIAL` in prompts.
 
 **Deterministic routing, LLM only for writing.** Intent classification is ordered regex
 rules (`generation/query_analysis.py`): instant, free, reproducible, and unit-tested
@@ -142,7 +159,7 @@ withheld, so an off-topic answer (e.g. "90 + 70 = 160") never appears even brief
   LLM. Numbers are re-checked against the *original dataset* text of cited articles,
   independently of the app's verifier, plus a rule assertion per category.
 
-Latest results: **159 passed** (unit + integration), **27/27 eval checks passed**
+Latest results: **303 passed** (unit + integration), **27/27 eval checks passed**
 (12 reference queries + out-of-scope and borderline questions);
 `ruff`, `mypy --strict`, ESLint, and 9 UI tests clean.
 

@@ -1,0 +1,466 @@
+# Cleaning rules for the news feed. Patterns are Python regular expressions.
+# Adding a publisher's boilerplate means adding an entry here; no code changes.
+# Rules apply in the order listed; each rule sees the output of the previous one.
+
+step_order = [
+  "encoding_repair",
+  "punctuation",
+  "sentence_spacing",
+  "symbols",
+  "noise_blocks",
+  "urls",
+  "repeated_title",
+  "whitespace",
+]
+title_step_order = ["encoding_repair", "punctuation", "whitespace"]
+
+# Publisher ranking labels such as "Zacks Rank #3 (Hold)" are kept by default: they are
+# attributable analyst-style ratings, not page chrome.
+keep_ranking_labels = true
+
+# Decorative symbols carrying no information (star-rating glyphs, emoji, trademark marks,
+# chevrons, bullet separators). "©" is not listed: copyright lines are removed whole below.
+symbol_patterns = [
+  '[★☆]+',
+  '[\U0001F300-\U0001FAFF]',
+  '[✀-➿]',
+  '[®™]',
+  '»',
+  '[•·]',
+]
+
+url_patterns = [
+  'https?://[^\s<>"]*[^\s<>".,;:!?)\]]',
+  'www\.[^\s<>"]*[^\s<>".,;:!?)\]]',
+]
+
+[promo_block]
+# A promo block that starts in Title Case is a headline list; one that starts in sentence
+# case is a single promotional line. See PromoBlockScanner for how each one ends.
+max_words = 60
+title_case_probe_words = 4
+# An unpunctuated sentence boundary is only accepted this many words into a sentence-case
+# promo, so adjective pairs early in a promo line ("The average American couple") don't
+# end it prematurely.
+min_words_before_boundary = 4
+connectors = [
+  "a", "an", "the", "and", "but", "or", "nor", "for", "so", "yet", "on", "at", "to",
+  "from", "by", "of", "in", "with", "as", "vs", "via", "into", "over", "up", "off", "out",
+]
+sentence_openers = [
+  "The", "A", "An", "This", "These", "Those", "That", "It", "It's", "Its", "In", "On",
+  "As", "At", "For", "But", "And", "However", "Meanwhile", "He", "She", "They", "We",
+  "I", "Our", "Their", "His", "Her", "Instead", "While", "After", "Before", "According",
+]
+end_markers = [
+  "Disclosure:", "Story Continues", "View Comments", "READ NEXT", "Read Next:",
+  "READ ALSO", "Read More", "Up Next:", "Don't Miss:", "Trending:", "Most Read from", "See Also:",
+]
+
+[footer_safety]
+# A footer tail is stripped only if, after ignoring sentences that match these boilerplate
+# phrases, no sentence names a company/ticker or states a number in a full sentence.
+min_sentence_words = 6
+boilerplate = [
+  'Motley Fool', 'Stock Advisor', 'Zacks', 'Simply Wall St', 'Investopedia', 'Benzinga',
+  'disclosure policy', 'has positions in', 'has no position', 'Free Stock Analysis Report',
+  'free report', 'made the cut', 'our recommendation', 'made this list', 'top 10 list',
+  'Should you invest', 'Before you buy stock', 'Learn more', 'stock-picking',
+  'average gains?', 'live picks', 'Past performance', 'potential for loss',
+  'informational purposes', 'recommendation to buy', 'should not be assumed',
+  'current as of the date', 'views or opinions', 'hypothetical portfolios',
+  'actual portfolios', 'unmanaged index', 'performance numbers', 'latest recommendations',
+  '\bdownload\b', '\bclick\b', 'originally (published|appeared)', 'general in nature',
+  'financial advice', 'fundamental data', 'price-sensitive', 'feedback on this article',
+  'Concerned about the content', 'Get in touch', 'editorial', 'warranty and liability',
+  'does not own any of the above', 'Read the original article', 'Media Contact',
+  'Transform your trading', 'unique insights', 'latest stock analysis', 'View Comments',
+  'investment banking', 'returns as of', 'monster returns', 'doubled? down',
+  'missed the boat', 'missed your chance', 'numbers speak for themselves',
+  'another chance like this', 'TipRanks', 'TheFly', 'Read More on', 'trade ideas',
+  'NEW TRADES',
+]
+
+# ---------------------------------------------------------------------------------------
+# Truncation markers: removed from the text but reported as signals for stub detection.
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "paywall_premium"
+category = "truncation"
+pattern = 'PREMIUM\s+Upgrade to read this .*?Already have a subscription\?\s*Sign in'
+truncation = true
+
+[[noise_rules]]
+name = "continue_reading"
+category = "truncation"
+pattern = '\bContinue Reading\b'
+truncation = true
+
+# ---------------------------------------------------------------------------------------
+# Site UI chrome.
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "story_continues"
+category = "ui_chrome"
+pattern = '\bStory Continues\b'
+
+[[noise_rules]]
+name = "view_comments"
+category = "ui_chrome"
+pattern = '\bView Comments\b\s*\|?'
+
+[[noise_rules]]
+name = "yahoo_video_carousel"
+category = "ui_chrome"
+# "Related Videos 02:34 <headline> Yahoo Finance Video 26 minutes ago 00:57 ..."
+pattern = 'Related Videos(?:\s+\d{1,2}:\d{2}(?::\d{2})?\s+.+?\s+Yahoo Finance Video\s+\d+\s+(?:minutes?|hours?|days?)\s+ago)+'
+
+# ---------------------------------------------------------------------------------------
+# Publisher footers: stripped to the end of the text, guarded by [footer_safety].
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "motley_fool_footer"
+category = "footer"
+pattern = 'Should you invest \$[\d,]+ in [^?]{1,60} right now\?'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "motley_fool_double_down_footer"
+category = "footer"
+pattern = '''Don't miss this second chance at a potentially lucrative opportunity'''
+strategy = "to_end"
+
+[[noise_rules]]
+name = "zacks_footer"
+category = "footer"
+pattern = '''Why Haven't You Looked at Zacks' Top Stocks\?'''
+strategy = "to_end"
+
+[[noise_rules]]
+name = "zacks_recommendations_footer"
+category = "footer"
+pattern = 'Want the latest recommendations from Zacks Investment Research\?'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "benzinga_unlocked_footer"
+category = "footer"
+pattern = 'UNLOCKED: \d+ NEW TRADES EVERY WEEK'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "thefly_footer"
+category = "footer"
+pattern = '(?:Filter, analyze, and streamline your search|Published first on TheFly)'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "simply_wall_st_footer"
+category = "footer"
+pattern = 'Have feedback on this article\?'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "investopedia_footer"
+category = "footer"
+pattern = 'The comments, opinions, and analyses expressed on Investopedia'
+strategy = "to_end"
+
+[[noise_rules]]
+name = "benzinga_footer"
+category = "footer"
+pattern = '\bUp Next\s*:'
+strategy = "to_end"
+
+# ---------------------------------------------------------------------------------------
+# Cross-promotion blocks: the marker plus the headline list or promo line after it.
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "bloomberg_most_read"
+category = "cross_promo"
+# Bloomberg's list mixes English and Spanish headlines and runs straight into the article
+# body with no separator, so the scan is allowed to continue through non-English runs.
+pattern = 'Most Read from Bloomberg(?: Businessweek)?'
+strategy = "promo_block"
+allow_foreign_headlines = true
+
+[[noise_rules]]
+name = "read_next"
+category = "cross_promo"
+pattern = '\bread next\s*:'
+strategy = "promo_block"
+ignore_case = true
+
+[[noise_rules]]
+name = "read_also"
+category = "cross_promo"
+pattern = '\bREAD ALSO\s*:'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "read_more"
+category = "cross_promo"
+pattern = '\(?\bread more(?: on [A-Z.]+)?\s*:'
+strategy = "promo_block"
+ignore_case = true
+
+[[noise_rules]]
+name = "dont_miss"
+category = "cross_promo"
+pattern = '''\bDon't Miss\s*:'''
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "trending"
+category = "cross_promo"
+pattern = '\bTrending\s*:'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "see_also"
+category = "cross_promo"
+pattern = '\bSee Also\s*:'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "insider_monkey_cross_promo"
+category = "cross_promo"
+pattern = '(?:In another article,? we discussed|please check out our hedge fund investor letters|Why are we interested in the stocks that hedge funds)'
+strategy = "sentence"
+
+# Benzinga sponsored lines that follow the markers above, often two or three in a row.
+[[noise_rules]]
+name = "sponsored_deloitte"
+category = "promo_claim"
+pattern = '''(?:Inspired by Uber and Airbnb - )?Deloitte's (?:#1 )?fastest-growing software company'''
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_foldable_home"
+category = "promo_claim"
+pattern = 'Maker of the \$[\d,]+ foldable home'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_invest_today"
+category = "promo_claim"
+pattern = 'You can invest today for just'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_bezos_fund"
+category = "promo_claim"
+pattern = 'If there was a new fund backed by Jeff Bezos'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_bezos_landlord"
+category = "promo_claim"
+pattern = 'This Jeff Bezos-backed startup'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_entrepreneurs"
+category = "promo_claim"
+pattern = 'These five entrepreneurs are worth'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_retirement"
+category = "promo_claim"
+pattern = '(?:Many are using retirement income calculators|The average American couple has saved this much|Can you guess how many Americans|The percentage may shock you)'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_age_savings"
+category = "promo_claim"
+pattern = '''If You're Age \d+'''
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_alt_assets"
+category = "promo_claim"
+pattern = '(?:BlackRock is calling \d{4} the year of alternative assets|One firm from NYC has quietly built a group of|CEO of Integris gathered a team)'
+strategy = "promo_block"
+
+[[noise_rules]]
+name = "sponsored_real_estate"
+category = "promo_claim"
+# Fixed ad copy that runs into the article's own subheading, so it is matched exactly.
+pattern = '''Many don't know there are tax benefits when buying a unit as an investment - Here's how to invest in real estate by mirroring BlackRock's big move'''
+
+[[noise_rules]]
+name = "market_research_cta"
+category = "promo_claim"
+# Press-release calls to action glued to a stripped link, e.g. "Get a Sample Report of X@".
+pattern = '(?:Get a Sample Report|Make an Enquiry Now|Buy an Enterprise-User PDF|Access Complete Report Details|Acquire our comprehensive analysis today|Download Brochure)[^@]{0,120}@'
+
+[[noise_rules]]
+name = "benzinga_edge"
+category = "promo_claim"
+pattern = '(?:Benzinga Edge|Get the latest stock analysis from Benzinga)'
+strategy = "sentence"
+
+[[noise_rules]]
+name = "thestreet_pro"
+category = "promo_claim"
+pattern = 'TheStreet Pro'
+strategy = "sentence"
+
+# Insider Monkey self-promotion (the intro line and methodology are kept on purpose).
+[[noise_rules]]
+name = "insider_monkey_promo"
+category = "promo_claim"
+pattern = '(?:we are obsessed with the stocks that hedge funds pile into|outperform the market by imitating|check out our report about the cheapest AI stock|While we acknowledge the potential of)'
+strategy = "sentence"
+
+[[noise_rules]]
+name = "newsletter_promo"
+category = "promo_claim"
+# Keyed on "newsletter", never on "returned N%": four genuine return figures exist.
+pattern = '\bnewsletter'
+strategy = "sentence"
+ignore_case = true
+
+[[noise_rules]]
+name = "gurufocus_warning"
+category = "promo_claim"
+pattern = 'Warning! GuruFocus has detected \d+ Warning Signs? with [A-Z.]+\.?'
+
+[[noise_rules]]
+name = "tipranks_thefly"
+category = "promo_claim"
+pattern = '(?:TipRanks|Published first on TheFly)'
+strategy = "sentence"
+
+[[noise_rules]]
+name = "try_now"
+category = "promo_claim"
+pattern = 'Try Now\s*>+'
+
+[[noise_rules]]
+name = "zacks_cross_promo"
+category = "promo_claim"
+pattern = '''(?:complete list of today's Zacks #1 (?:\(Strong Buy\) )?Rank|all of today's research reports here|You can read today's AWS here|please check out our weekly Earnings Trends report)'''
+strategy = "sentence"
+
+[[noise_rules]]
+name = "zacks_report_link"
+category = "promo_claim"
+# Parenthetical link glued to the previous sentence, so it is removed as an exact span.
+pattern = '\(You can read the full research report on [^()]{1,80} here\s*>+\)'
+
+[[noise_rules]]
+name = "click_here"
+category = "promo_claim"
+pattern = '\bclick (?:here|now)\b'
+strategy = "sentence"
+ignore_case = true
+
+# ---------------------------------------------------------------------------------------
+# Legal boilerplate and syndication attributions.
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "disclosure"
+category = "legal"
+pattern = '\bDisclosure\s*:'
+strategy = "sentence"
+
+[[noise_rules]]
+name = "originally_published"
+category = "legal"
+pattern = '\boriginally (?:published|appeared) (?:at|on|in|by)\b'
+strategy = "sentence"
+ignore_case = true
+
+[[noise_rules]]
+name = "copyright"
+category = "legal"
+pattern = '(?:©\s*\d{4}|All rights reserved|does not provide investment advice)'
+strategy = "sentence"
+ignore_case = true
+
+[[noise_rules]]
+name = "read_original"
+category = "legal"
+pattern = 'Read the original article on'
+strategy = "sentence"
+
+# ---------------------------------------------------------------------------------------
+# Image credits (descriptive caption sentences are kept).
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "credit_image_getty_contributor"
+category = "image_credit"
+pattern = '-?\s*Image:\s*[^()]{1,60}\(Getty Images\)'
+
+[[noise_rules]]
+name = "credit_getty_parenthetical"
+category = "image_credit"
+pattern = '\([^()]{0,80}Getty Images\)'
+
+[[noise_rules]]
+name = "credit_via_getty"
+category = "image_credit"
+pattern = '[A-Z][\w]*(?: [A-Z][\w]*)* via Getty Images'
+
+[[noise_rules]]
+name = "credit_slash_getty"
+category = "image_credit"
+pattern = '\b\w+/Getty Images'
+
+[[noise_rules]]
+name = "credit_image_source_getty"
+category = "image_credit"
+pattern = 'Image [Ss]ource:\s*Getty Images\.?'
+
+[[noise_rules]]
+name = "credit_image_source_repeated"
+category = "image_credit"
+# Chart placeholders: "Zacks Investment Research Image Source: Zacks Investment Research"
+pattern = '\b([A-Z][\w.&-]*(?:\s+(?:[A-Z][\w.&-]*|and|of|the)){0,4})\s+Image [Ss]ource:\s*\1(?!\w)'
+
+[[noise_rules]]
+name = "credit_photo_parenthetical"
+category = "image_credit"
+pattern = '\(Photo:\s*[^)]{1,60}\)'
+
+# ---------------------------------------------------------------------------------------
+# Contact details.
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "contact_author_sentence"
+category = "contact"
+pattern = '(?:\bEmail (?:him|her|them|[A-Z][a-z]+ [A-Z][a-z]+) at\b|\bEmail [\w.+-]+@|\bFor more information,? visit\b|\b[Ff]ollow (?:him|her|them|us|[A-Z][a-z]+) on\b|\bTips on stories\?)'
+strategy = "sentence"
+
+[[noise_rules]]
+name = "contact_social_handle"
+category = "contact"
+pattern = '(?<![\w@])@[A-Za-z_][\w.]{2,}'
+
+[[noise_rules]]
+name = "contact_email"
+category = "contact"
+pattern = '[\w.+-]+@[\w-]+(?:\.[\w-]+)+'
+
+[[noise_rules]]
+name = "contact_email_obfuscated"
+category = "contact"
+pattern = '[\w.+-]+\s*\(at\)\s*[\w-]+(?:\.[\w-]+)+'
+
+[[noise_rules]]
+name = "contact_phone"
+category = "contact"
+# North-American numbers only (e.g. "800-767-3771 ext. 9339"). The lookarounds stop it
+# matching inside figures, decimals, ranges, or percentages.
+pattern = '(?<![\w.,$/-])(?:\+?1[-. ])?(?:\(\d{3}\)\s?|\d{3}[-.])\d{3}[-.]\d{4}(?:\s*ext\.?\s*\d+)?(?![\w%/-]|[.,]\d)'
+
+# ---------------------------------------------------------------------------------------
+# Publisher ranking labels (only applied when keep_ranking_labels = false).
+# ---------------------------------------------------------------------------------------
+[[noise_rules]]
+name = "zacks_rank_label"
+category = "ranking_label"
+pattern = 'Zacks Rank\s*#?\d\s*\([^)]*\)'
+ranking_label = true

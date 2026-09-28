@@ -11,6 +11,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 
+from chat_app.core.text_normalization import fold_punctuation
 from chat_app.generation.context import Source
 from chat_app.ingestion.sentences import split_sentences
 
@@ -54,7 +55,9 @@ class GroundingReport(BaseModel):
 
 def extract_numbers(text: str) -> set[str]:
     """Canonical numbers in `text` ("$1,024.05" -> "1024.05"), ignoring citation markers."""
-    text = _SOURCE_REFERENCE.sub(" ", _CITATION.sub(" ", text))
+    # Same folding as ingestion, so e.g. a Unicode minus or NBSP in LLM output compares
+    # equal to the cleaned article text.
+    text = _SOURCE_REFERENCE.sub(" ", _CITATION.sub(" ", fold_punctuation(text)))
     return {
         match.group(1).replace(",", "") + (f".{match.group(2)}" if match.group(2) else "")
         for match in _NUMBER.finditer(text)
@@ -69,7 +72,7 @@ def verify_answer(answer: str, sources: Sequence[Source]) -> GroundingReport:
     cited: list[int] = []
     removed: list[RemovedSentence] = []
 
-    for line in answer.splitlines():
+    for line in fold_punctuation(answer).splitlines():
         prefix_match = _BULLET.match(line)
         prefix = prefix_match.group(1) if prefix_match else ""
         kept_sentences = []
