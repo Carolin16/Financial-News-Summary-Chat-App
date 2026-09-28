@@ -1,0 +1,3 @@
+# Keep LF endings in the repo and working tree: files run in Linux containers.
+* text=auto eol=lf
+*.docx binary

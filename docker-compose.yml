@@ -1,0 +1,44 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.1
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    healthcheck:
+      # image ships without curl; bash's /dev/tcp is enough to confirm the port is up
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DATA_PATH: /data/stock_news.json
+      # Committed LLM enrichment results; indexing in Docker reuses them (no LLM calls).
+      ENRICHMENT_CACHE_PATH: /data/enrichment_cache.json
+    volumes:
+      # dataset lives outside the backend build context, so mount it read-only
+      - ./data:/data:ro
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      qdrant:
+        condition: service_healthy
+
+  ui:
+    build: ./ui
+    ports:
+      - "${UI_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  # persists vectors between runs so indexing only has to happen once
+  qdrant_storage:

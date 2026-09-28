@@ -1,0 +1,2141 @@
+{
+  "064ae9a4b760a065": {
+    "content_hash": "6ebb9c1653ccf4d1c88592a25ca3eb7dc5796b2c9ea99683f9058358346685c0",
+    "metadata": {
+      "primary_tickers": [
+        "TSLA",
+        "F"
+      ],
+      "mentioned_tickers": [
+        "NVDA",
+        "INTC",
+        "COIN",
+        "WFC",
+        "AMZN",
+        "M"
+      ],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "0665add8621b89e6": {
+    "content_hash": "e7f8a838b9245f93974fd5efd90db9497a3b6309ab48e7f16aa96a3d713b76a3",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "GOOGL",
+        "AAPL",
+        "NVDA",
+        "TSLA",
+        "AMZN",
+        "META",
+        "MSFT"
+      ],
+      "event_types": [
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "08a0a2321e6a44fe": {
+    "content_hash": "03064b698979c47aff59974a9f518fb640d75c4f9be57479b656380da9c7bc4f",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "negative",
+      "article_type": "analysis"
+    }
+  },
+  "0a29b37af5eac127": {
+    "content_hash": "096c6b0ef72b2d0defe0fa5bc808000e55cb6c71f3f0cf4035c9d887ee440d67",
+    "metadata": {
+      "primary_tickers": [
+        "BILI",
+        "NFLX",
+        "ZETA"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "partnership",
+        "leadership"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "0a84ffc197486be9": {
+    "content_hash": "5e1f4e7874c40e6a8b129df92011ec4da55a5450b78b236c83f50c02c2acd000",
+    "metadata": {
+      "primary_tickers": [
+        "IBM"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "0baada58ff0d6490": {
+    "content_hash": "0349df511125f72be911664e798bd1e8b7810d92918f5f5ad2b11e38faeb169c",
+    "metadata": {
+      "primary_tickers": [
+        "BAC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "0da1e6a399d647f7": {
+    "content_hash": "8cd7339b6a0ec4b7fefe3b768b7aa9a67e4b0d13e56649a915cec2fea472d837",
+    "metadata": {
+      "primary_tickers": [
+        "GOOGL",
+        "META",
+        "AMZN",
+        "AAPL",
+        "NFLX"
+      ],
+      "mentioned_tickers": [
+        "PINS",
+        "TGT",
+        "MCD",
+        "DIS",
+        "TSLA"
+      ],
+      "event_types": [
+        "legal_regulatory",
+        "other"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "0f1ce48b85b7889d": {
+    "content_hash": "990e8622232d27381c3417fd27103d26e32cc8b3867782ee3a840eb965b289b8",
+    "metadata": {
+      "primary_tickers": [
+        "ASML"
+      ],
+      "mentioned_tickers": [
+        "NVDA",
+        "AVGO",
+        "MRVL",
+        "TSM",
+        "INTC"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move",
+        "analyst_rating"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "119fc6fade19cebe": {
+    "content_hash": "c516bb5ef6f28d67cfa3c36b998265c76a97ca6a2564d232738e268bc09cd527",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "stock_move",
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "139e548326f5304e": {
+    "content_hash": "94ac5f7b4fb38fb49ed74c3ed15e84c3e1c7e285f22d1e359ad7aa6482c199c3",
+    "metadata": {
+      "primary_tickers": [
+        "CSCO",
+        "IBM",
+        "ORCL"
+      ],
+      "mentioned_tickers": [
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "TSLA",
+        "NVDA",
+        "AMZN",
+        "BIDU",
+        "BLKB",
+        "IQ",
+        "ANET",
+        "CDNS",
+        "ADEA",
+        "UIS",
+        "LBTYA",
+        "BMBL"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "15984030c2bfe69a": {
+    "content_hash": "2c81fae69cd860d93b2071e841ea30cac41a3fc7b52690d174f2e878efdf2ef4",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA",
+        "ILMN",
+        "IQV",
+        "DXCM"
+      ],
+      "mentioned_tickers": [
+        "GOOGL"
+      ],
+      "event_types": [
+        "product",
+        "partnership",
+        "analyst_rating"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "1858c9a2c8e8fdd1": {
+    "content_hash": "40ecbd160c00e1c20f4a5394cc112e71b3e7ac8dec32ed3f767507ebee04e0f3",
+    "metadata": {
+      "primary_tickers": [
+        "AMCX"
+      ],
+      "mentioned_tickers": [
+        "NFLX",
+        "CHTR",
+        "VZ",
+        "ROKU",
+        "AMZN"
+      ],
+      "event_types": [
+        "earnings",
+        "partnership",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "other"
+    }
+  },
+  "191f743520fe709a": {
+    "content_hash": "b4edaa32eee3a95444d00052e1e2f54a9683fa1fb30b8d9099ecf212a129faae",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "analyst_rating"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "1ad57330321c4d7a": {
+    "content_hash": "b7b049576e7cf1213f309c555071a44ee6ed907550712d735cae0a69186242d1",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NFLX",
+        "EL",
+        "BLK"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "other"
+    }
+  },
+  "1c843303e7472426": {
+    "content_hash": "9aa93924fba9860c981635f28a2e5ed53e724918a51db884b2df1ca149243c19",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "AVGO",
+        "TSM",
+        "QCOM",
+        "ARM"
+      ],
+      "event_types": [
+        "stock_move",
+        "partnership"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "1ce75896ab79117f": {
+    "content_hash": "cc0b59c97e271bdff49e16064bbd810ea3b3de3ab1e28cf88b373055e3b8cd9d",
+    "metadata": {
+      "primary_tickers": [
+        "ROKU"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "249f179e7e98261c": {
+    "content_hash": "1408aea7a94877e094cb74d32bafae13c7679809518b7f4e705a1e468964ba2a",
+    "metadata": {
+      "primary_tickers": [
+        "BBWI"
+      ],
+      "mentioned_tickers": [
+        "JPM",
+        "MSFT",
+        "GOOGL",
+        "KO",
+        "MNST"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "price_target",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "2631c3ee3bdd2bd6": {
+    "content_hash": "cfb6d329f741f81da10aedf2fecb6ec1185c8351f6f27b325eff4b1eaf981963",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA",
+        "ARM"
+      ],
+      "mentioned_tickers": [
+        "AAPL",
+        "QCOM",
+        "WRD",
+        "NBIS",
+        "SOUN",
+        "SERV",
+        "NNOX"
+      ],
+      "event_types": [
+        "stock_move",
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "27c3075f48d481ee": {
+    "content_hash": "6324ab995b7111264eea1fbc61b23e81d550b6b7203c87dbee2c14795a700f1d",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "IBM",
+        "UNH",
+        "MCK",
+        "ORCL",
+        "MDRX",
+        "MDT",
+        "SPOT"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "2843a406325b1a7c": {
+    "content_hash": "8c6f700043a803072917d95b0c9fbac366f422a79961c9710702d41cd55057e5",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NFLX"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "other"
+    }
+  },
+  "2e110625645d2a97": {
+    "content_hash": "c2375c4b004f05aaf71c8db7d2e6057400b50028fb8a565385f42513e96f1a1d",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [
+        "JPM"
+      ],
+      "event_types": [
+        "stock_move",
+        "analyst_rating"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "2ee902ea009d3bff": {
+    "content_hash": "3c9e1ab761f25f27b1d1e179e7f56e90f9c115f7e14189096bd8cc365516ba1f",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "MSFT"
+      ],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "2f21fe77f028cf96": {
+    "content_hash": "9f428a8844b40605eee709bb98fce0904d0ab0888edd4a2fae54fa6a36732f6a",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "earnings",
+        "product",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "2fe6314d1f9183ff": {
+    "content_hash": "89cbb4d872d62ecf566ffa5f4cc5824486179221d26275a3af133d40f2d157e4",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NKE",
+        "INTC",
+        "AVGO",
+        "TSM",
+        "MDT"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "3e08bfdc58f56d53": {
+    "content_hash": "5a1919ef979bb67b1f807c84d313e0dbf846e4e16f5b74077d13aa0ab28be4ba",
+    "metadata": {
+      "primary_tickers": [
+        "MSFT"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "stock_move"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "3ed29cd2cc79adf6": {
+    "content_hash": "7992424ee68ac6c158a0ede94d9bf9bb9a4c5facba5f5906f428de9be2097377",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "product"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "40ad6250a18f7f47": {
+    "content_hash": "27c2b6416bfe64a00fe4c0756fd9b7cfaee5cdfefe59066632ee17c185666997",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "MSFT",
+        "AMZN",
+        "GOOGL",
+        "NVDA"
+      ],
+      "event_types": [
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "43943ff3747c4381": {
+    "content_hash": "b90f0e0a39576a7302bfb69ef49652d1ffaba369b39cc7f73438fa4d19fb7337",
+    "metadata": {
+      "primary_tickers": [
+        "MSFT"
+      ],
+      "mentioned_tickers": [
+        "GOOGL",
+        "NVDA"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "43dac0ddb520916a": {
+    "content_hash": "278e9e199c30029c371eefab1546a720a390d97a4add114a482ae5b10e51c8c8",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL",
+        "BABA"
+      ],
+      "mentioned_tickers": [
+        "BIDU"
+      ],
+      "event_types": [
+        "partnership",
+        "analyst_rating",
+        "price_target",
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "447682f7c1fc9306": {
+    "content_hash": "14b8a5475801932c2a28204976b04d454cc3130b117a9db61f79e8c7078fff22",
+    "metadata": {
+      "primary_tickers": [
+        "NPO"
+      ],
+      "mentioned_tickers": [
+        "ESE",
+        "ARW",
+        "MSFT",
+        "GOOGL",
+        "KO",
+        "MNST"
+      ],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "price_target",
+        "stock_move"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "4526d86ea0b93313": {
+    "content_hash": "5ca698a5c1693c88bbaf384799397fa3864b19555f4143b83b51a39b59158a42",
+    "metadata": {
+      "primary_tickers": [
+        "STZ"
+      ],
+      "mentioned_tickers": [
+        "BRK.A",
+        "BRK.B"
+      ],
+      "event_types": [
+        "stock_move",
+        "other"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "45e59f4bca4a9a57": {
+    "content_hash": "a2b64594d3ef475e808aded3e9c6bd0360963aa188a3f62dd798620d64b8dbc5",
+    "metadata": {
+      "primary_tickers": [
+        "INTC",
+        "TSM"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "stock_move",
+        "partnership"
+      ],
+      "sentiment": "negative",
+      "article_type": "news"
+    }
+  },
+  "46aaf6f31d6f4f1a": {
+    "content_hash": "9400589950f3d38505ad5095820a35f2d10154e26760255aa18d181a92a59057",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [
+        "JPM"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "478cc84af37bfe52": {
+    "content_hash": "43f7b7d21ea932bb0fe5660268614d5d019647157c8a4b52a3987909897bfab0",
+    "metadata": {
+      "primary_tickers": [
+        "MDT",
+        "WMT",
+        "BKNG",
+        "MELI"
+      ],
+      "mentioned_tickers": [
+        "PLTR",
+        "META",
+        "TMUS",
+        "NFLX",
+        "NVDA",
+        "NVO",
+        "LLY",
+        "COST",
+        "TGT",
+        "AMZN",
+        "EXPE",
+        "EBAY",
+        "PBR",
+        "ANET",
+        "OXY",
+        "BRK.B",
+        "DEO",
+        "HSBC",
+        "CVNA",
+        "TPL",
+        "SO",
+        "NEM",
+        "LYV",
+        "CCEP",
+        "FYBR"
+      ],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "price_target",
+        "stock_move"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "4b2f03b10d7335eb": {
+    "content_hash": "2cfff8866e420e84afd124b6f30d0b0984f222776d7ee35aeb685353d617bf0d",
+    "metadata": {
+      "primary_tickers": [
+        "INTC",
+        "AVGO",
+        "TSM"
+      ],
+      "mentioned_tickers": [
+        "MS",
+        "GS",
+        "QCOM"
+      ],
+      "event_types": [
+        "stock_move",
+        "legal_regulatory",
+        "other"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "4c24f56645e0007f": {
+    "content_hash": "6bae2f88e60d26a6e6196af58a1cf7fe6e01068b71a20550de94e30172580339",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [
+        "MCD"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "4c5b360de3bc325d": {
+    "content_hash": "c994bce22fd534692a80c621e25f08247881bf346f1beb816579fb5ac13d4375",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX",
+        "AMZN"
+      ],
+      "mentioned_tickers": [
+        "DIS",
+        "CMCSA"
+      ],
+      "event_types": [
+        "product",
+        "analyst_rating"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "4df7a6fba7e22865": {
+    "content_hash": "8ccf9818541d12c9973000b4c0ad026661f8866771d38533ab73db1401a672ff",
+    "metadata": {
+      "primary_tickers": [
+        "CYBR"
+      ],
+      "mentioned_tickers": [
+        "MSFT",
+        "AMZN",
+        "GOOGL"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move",
+        "analyst_rating",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "4e29cf7f4ae7a938": {
+    "content_hash": "f424a061cc4fcdd8ce9def45d31ca9bd46a00f0c3b607b5b6229b08cbe70502c",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "ORCL",
+        "TRI",
+        "EFX",
+        "CLGX",
+        "TRU",
+        "IBM",
+        "BABA",
+        "EXPGF",
+        "SAP",
+        "NLSN",
+        "FICO",
+        "MSFT"
+      ],
+      "event_types": [
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "4eb4e3d6b7577e5b": {
+    "content_hash": "0aa05cd7fb9ba00494bee2d85f1ba090f41a3777c4e3c15fa7666095e538aae6",
+    "metadata": {
+      "primary_tickers": [
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "ORCL",
+        "IBM"
+      ],
+      "mentioned_tickers": [
+        "TSLA"
+      ],
+      "event_types": [
+        "product",
+        "macro"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "5160d4596db41394": {
+    "content_hash": "f474730329b2590adabb4498bf41d3dff3cf9f968f44df7e388cdcbc94085911",
+    "metadata": {
+      "primary_tickers": [
+        "CRNC"
+      ],
+      "mentioned_tickers": [
+        "NVDA",
+        "MSFT",
+        "TUYA"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move",
+        "partnership",
+        "product"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "5572444eee6a2cd7": {
+    "content_hash": "3428e9a0dd76851fe589aa7e12815e96fea1df33bd02195473bbf3eed1704cea",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NKE",
+        "WYNN",
+        "INTC",
+        "AVGO",
+        "TSM",
+        "MDT",
+        "CAG",
+        "HOOD",
+        "META",
+        "AMZN",
+        "SMCI",
+        "FLR"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "other"
+    }
+  },
+  "5580d81c597205f2": {
+    "content_hash": "bfd9d07cd8eddcbc0c8e69d4cf8a56c2810ec68fc6d04481449aaea582859a2d",
+    "metadata": {
+      "primary_tickers": [
+        "GOOGL",
+        "MSFT"
+      ],
+      "mentioned_tickers": [
+        "NVDA",
+        "AAPL",
+        "NFLX",
+        "AMZN",
+        "IONQ"
+      ],
+      "event_types": [
+        "product",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "55a7588ec14bd769": {
+    "content_hash": "2c1274c1bfea727153cec01405629666412f8094cbca810d7f4452c40fc65f5c",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "product",
+        "analyst_rating"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "55d99aca6b3a2e82": {
+    "content_hash": "201244ba120361744f1c2d11a323cb18fb95ce90b30232ea4223ca6707b6e149",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NVDA",
+        "AMD",
+        "INTC",
+        "ASML",
+        "WOLF",
+        "NVTS",
+        "MSFT",
+        "ORCL",
+        "AI",
+        "BBAI",
+        "SOUN",
+        "APLD",
+        "WULF",
+        "POET",
+        "RXRX",
+        "TEM",
+        "BKSY",
+        "PLTR",
+        "KTOS",
+        "AAPL",
+        "GOOGL",
+        "META",
+        "AMZN",
+        "TSLA",
+        "SERV"
+      ],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "listicle"
+    }
+  },
+  "57d602d3cf4f14aa": {
+    "content_hash": "d0a215b84354f2e3b9cab38f7d069888491d9ba586563e2f25deed146a92e5ea",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [
+        "META",
+        "GOOGL",
+        "AAPL",
+        "MSFT"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "593272837a9bd993": {
+    "content_hash": "2366bc12e87e5af4e64b0326578bf59a9160f35f0c2d558d15302bf1db1f4601",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "59bef5ae384cd736": {
+    "content_hash": "d9bd426d5ea1e59246898538cacb5198430d273f78d63b08ec253c82f483ab01",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "CSCO",
+        "IBM",
+        "SIEGY",
+        "CTTAF",
+        "IVG",
+        "MBGYY"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "5e287b4926920b23": {
+    "content_hash": "8d7ada9b34c2875ea70c47f3f5d511e4664567277c0a2266e088af10406968b1",
+    "metadata": {
+      "primary_tickers": [
+        "FTGS"
+      ],
+      "mentioned_tickers": [
+        "DECK",
+        "EXPE",
+        "NFLX",
+        "VUG",
+        "QQQ"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "stock_move"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "5fd9423d6b906361": {
+    "content_hash": "b560d817ed954b13d7f94501d577fb9dce5a266f371cf5ed71e3d90b8e154c27",
+    "metadata": {
+      "primary_tickers": [
+        "AMD"
+      ],
+      "mentioned_tickers": [
+        "INTC"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "price_target",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "63df5c747f501d2f": {
+    "content_hash": "43ed5d6016805d10cd20081e9aeed541df689a6063d7a918cf257349c4cfa34c",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "IBM"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "66c8a71fa36fb316": {
+    "content_hash": "84d142688613a9bddbb4a57133e58ad42450f838d1b0b0e2b70098bb7c7b79ce",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NVDA",
+        "META",
+        "BIDU",
+        "WBA"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "66cd4172301971ef": {
+    "content_hash": "8ae0fc24402ef6252cef456a45fa094ed07d314d02683665234e1f2a4eaeb65b",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN"
+      ],
+      "mentioned_tickers": [
+        "NVDA"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "mixed",
+      "article_type": "listicle"
+    }
+  },
+  "67e4102abbebb5e9": {
+    "content_hash": "14960e4e21ff2f27a20323e007c7779a50208fea57c30f93822d73ae1fc07244",
+    "metadata": {
+      "primary_tickers": [
+        "WMT"
+      ],
+      "mentioned_tickers": [
+        "AMZN",
+        "CRM"
+      ],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "stock_move",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "6a8ae2b164a33f0a": {
+    "content_hash": "496be5461e4d14a402d363f109e8a4fef48cd04baa7c2533c6814a3bdfbedb55",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "ADSK",
+        "IBM"
+      ],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "6e152764676c5fda": {
+    "content_hash": "f2eb6d82daaed6c0ce9aaf0dbb66b0f487020629b6e11689c00dc0d0ee49003d",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "other"
+    }
+  },
+  "720e0f2aa74dc94a": {
+    "content_hash": "be38d1ebb5edc654ce66a2a8addd0ac31b02a8379245b93018921e28308018d2",
+    "metadata": {
+      "primary_tickers": [
+        "AMCX"
+      ],
+      "mentioned_tickers": [
+        "NFLX"
+      ],
+      "event_types": [
+        "earnings",
+        "partnership"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "7365562be007ac53": {
+    "content_hash": "20ca7db10928320dd44c647a0199831cf1b5f2b6a6cd53bb6fa8936a2ce1e915",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "price_target"
+      ],
+      "sentiment": "negative",
+      "article_type": "news"
+    }
+  },
+  "79a32cc3ac60eed5": {
+    "content_hash": "2363a7c445f648d74f28f554d5e599ac025855c000d2b71a19c039091c29adf0",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NVDA",
+        "IBM",
+        "GOOGL"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "7b184dd8b548e308": {
+    "content_hash": "3f4c179dfb88046df8dbb448670b3bf4225a02d243e78083555b3c02117ec07a",
+    "metadata": {
+      "primary_tickers": [
+        "SAP"
+      ],
+      "mentioned_tickers": [
+        "IBM"
+      ],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "7bf016556101a3b8": {
+    "content_hash": "b349cabaad9c6d525c255c284fbfeca833d170e7f3fabf2295c94aaab0fffc44",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "price_target"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "7cf4bcb92e1d52fb": {
+    "content_hash": "8c54105aff597f789a497d637903cf5bf0207efa92df420bf048188c30533d54",
+    "metadata": {
+      "primary_tickers": [
+        "BRK.B",
+        "AAPL",
+        "AXP",
+        "V",
+        "KO"
+      ],
+      "mentioned_tickers": [
+        "COST"
+      ],
+      "event_types": [
+        "stock_move",
+        "other"
+      ],
+      "sentiment": "mixed",
+      "article_type": "press_release"
+    }
+  },
+  "8055c0073b5ee9dd": {
+    "content_hash": "65f8e843b7bb03b9696e4c87d8a407970c01ce422a866e204dd34f1f94b71aeb",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "price_target"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "8551c6592f7d927a": {
+    "content_hash": "3400b3dde438a41e8d8a16175c81bcbfbef224adc8efe67a0900ed43934a3fca",
+    "metadata": {
+      "primary_tickers": [
+        "CALM",
+        "ELF",
+        "BBAI"
+      ],
+      "mentioned_tickers": [
+        "NVDA"
+      ],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "stock_move",
+        "partnership",
+        "leadership",
+        "macro"
+      ],
+      "sentiment": "mixed",
+      "article_type": "press_release"
+    }
+  },
+  "89af04a10b6902ab": {
+    "content_hash": "8bf3138542bc3b46f734bdae61e9289f3e60b49b8885681ade094f2b7e716665",
+    "metadata": {
+      "primary_tickers": [
+        "META"
+      ],
+      "mentioned_tickers": [
+        "AMZN",
+        "MSFT",
+        "GOOGL",
+        "NVDA",
+        "IBM",
+        "ACN",
+        "SPOT"
+      ],
+      "event_types": [
+        "product",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "8ab09de59fd756e4": {
+    "content_hash": "5f0527f9d7b82525cdfbcba3c2c8529d5d01c76779b17485c4a0d3c2c3fc25fd",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "8cc4f38178db5261": {
+    "content_hash": "fe0ebbdf247cb66e283df82b695791604e0fac854a1d05bf13f1b3e703022ef4",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "legal_regulatory"
+      ],
+      "sentiment": "negative",
+      "article_type": "news"
+    }
+  },
+  "91fa478c61b94620": {
+    "content_hash": "3b049adada62b4f23762951e6c75b46587d92511d7c0ff457258179150e5f9fa",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "NVDA",
+        "META"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "94261e5d46d1947c": {
+    "content_hash": "50618555f29d305b12a4916340f5fc51cc817dc33c59e3f1c1294cd7f02d6580",
+    "metadata": {
+      "primary_tickers": [
+        "AMPL"
+      ],
+      "mentioned_tickers": [
+        "PLTR",
+        "CVLT",
+        "MSFT",
+        "GOOGL",
+        "KO",
+        "MNST"
+      ],
+      "event_types": [
+        "earnings",
+        "price_target",
+        "stock_move"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "98fe669fcf29e6cc": {
+    "content_hash": "a3519fd7501f0a49017e0c4251b74694845cc2fe37cce8db226c3a7f99438908",
+    "metadata": {
+      "primary_tickers": [
+        "WMT"
+      ],
+      "mentioned_tickers": [
+        "BIDU",
+        "AVGO",
+        "INTC",
+        "TSM",
+        "LUV",
+        "META",
+        "AMZN",
+        "SMCI",
+        "FLR",
+        "CAG",
+        "HOOD",
+        "DAL"
+      ],
+      "event_types": [
+        "earnings"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "99092775ed2f786f": {
+    "content_hash": "fbab9f6076994b8ea59179ef02af038896644478858e34f0b83cc650aad2ea1c",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL",
+        "LLY",
+        "SHOP",
+        "ICCC"
+      ],
+      "mentioned_tickers": [
+        "IBM",
+        "AMZN",
+        "PYPL",
+        "SNAP",
+        "PINS",
+        "CRTO",
+        "CTSH",
+        "ZOETIS",
+        "MRK"
+      ],
+      "event_types": [
+        "earnings",
+        "product",
+        "legal_regulatory",
+        "partnership"
+      ],
+      "sentiment": "mixed",
+      "article_type": "press_release"
+    }
+  },
+  "a0a22a47ed6b1aef": {
+    "content_hash": "0629a605e66ca88a49b5b20a47580d069ffa906bf48678354bc1df70409f6f9c",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "a2dc2e8dac4f4bcb": {
+    "content_hash": "d4c95cb011a6c781679706f2b1574645581802caa7c235d7114b98e61ae3921f",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN",
+        "WMT",
+        "BBY"
+      ],
+      "mentioned_tickers": [
+        "BUD",
+        "TGT"
+      ],
+      "event_types": [
+        "legal_regulatory",
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "a417bbdbbc6b993e": {
+    "content_hash": "e02cc097b6b64fe2cc0f07af7d81ef9c1c8c83dca0d7f6ee1d5dbefe2509dbff",
+    "metadata": {
+      "primary_tickers": [
+        "RRX"
+      ],
+      "mentioned_tickers": [
+        "MSFT",
+        "IBM",
+        "HUBB",
+        "GIC"
+      ],
+      "event_types": [
+        "leadership"
+      ],
+      "sentiment": "positive",
+      "article_type": "press_release"
+    }
+  },
+  "a446620cc42df921": {
+    "content_hash": "2b56c17214f6f62c8dfa8cc220f6fb59089ddad8ac20de6ad732dfb70d08d8f5",
+    "metadata": {
+      "primary_tickers": [
+        "NEO"
+      ],
+      "mentioned_tickers": [
+        "MSFT",
+        "GOOGL",
+        "KO",
+        "MNST"
+      ],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "negative",
+      "article_type": "news"
+    }
+  },
+  "a8c9ab6c32bbb168": {
+    "content_hash": "e6072f0b92a71aa13e2c3404da1b3f6de98c1808281f7263ddcbf31d15bda249",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "price_target",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "a9179e8b4dcbcaa9": {
+    "content_hash": "c684378e0fdb6d269b29f0d1aa102af9457df1fd5a251f3e3c65d55ca383b50b",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "U",
+        "GOOGL",
+        "AAPL",
+        "NVDA",
+        "IBM",
+        "HPE",
+        "CSCO",
+        "AMZN",
+        "LUMN"
+      ],
+      "event_types": [
+        "leadership"
+      ],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "aaebf89098a64966": {
+    "content_hash": "11c6f5a00d0945f792764828339e123ab21f359d99b255ff68393668d21156c5",
+    "metadata": {
+      "primary_tickers": [
+        "MCD"
+      ],
+      "mentioned_tickers": [
+        "TSLA",
+        "AAPL",
+        "NFLX",
+        "NVDA"
+      ],
+      "event_types": [
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "adb32f4a43576cb0": {
+    "content_hash": "d2a61326bf8c4919460dfcf0fd06260562cc33cd07750d5334c59267fbaab86a",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "TSM",
+        "AMD",
+        "MSFT",
+        "AMZN",
+        "NVDA"
+      ],
+      "event_types": [
+        "product",
+        "leadership",
+        "partnership"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "afa15ae5c0fb90db": {
+    "content_hash": "1f60f3c658fabc493ce487f7a6c68af039279a2a99a8f03ee181630db684ccd4",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "stock_move",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "b37db72ef9190937": {
+    "content_hash": "0efb53bbc8c294e14a135a5590920814282e388c4320fce971291b0ae2210587",
+    "metadata": {
+      "primary_tickers": [
+        "MSFT"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "price_target",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "ba9eedb78839862d": {
+    "content_hash": "8ba761407eecec6cd73ef123be6647e9a7af9c1b2652c8a638c6ced75d7aa9d9",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN"
+      ],
+      "mentioned_tickers": [
+        "GEHC"
+      ],
+      "event_types": [
+        "partnership",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "bd023c602d25d42e": {
+    "content_hash": "3266b063bed26baa9e54a93c9ffbcb8393f157e49b7baabb4b246c90aabc2425",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "AVGO",
+        "TSM"
+      ],
+      "event_types": [
+        "stock_move",
+        "other"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "be07433bcad38821": {
+    "content_hash": "64aa3d279d1193c9ea275ee4bd81444ab9e520989192dce0b2e5674334d2f27d",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL"
+      ],
+      "mentioned_tickers": [
+        "NVDA"
+      ],
+      "event_types": [
+        "product",
+        "earnings"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "bea8872a342a2b2b": {
+    "content_hash": "c7cc401f60cc8b4a7ef78762ee2e4ee4787a5499859eab679946b9c6490d1b9e",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL"
+      ],
+      "mentioned_tickers": [
+        "GS"
+      ],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "mixed",
+      "article_type": "listicle"
+    }
+  },
+  "bed1b24c8d5659c5": {
+    "content_hash": "40b239e516b2b57cd491e5b4942974c27ecbc51294f3259e37cce6666232e97f",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "c1e274d73502721b": {
+    "content_hash": "2553033e46312c9b9f0ded35f651cb6e5308ebcfa6f1f953a3ff62085c9a160e",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "listicle"
+    }
+  },
+  "c238fbf8a74d40ab": {
+    "content_hash": "31a801270baf2d7de0024d8088384b3515df75e4f739dcb563349c2b57622b79",
+    "metadata": {
+      "primary_tickers": [
+        "UPS",
+        "AMZN"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "legal_regulatory"
+      ],
+      "sentiment": "negative",
+      "article_type": "news"
+    }
+  },
+  "c3c81f4686e73485": {
+    "content_hash": "f2956d2450819b8e4f2fccf0f387a20f862f7de100024cd0390cf024013278e2",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "IBM"
+      ],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "c3f40d848486df1f": {
+    "content_hash": "d743809e0559c2114179b5fdb15a6e7e2d6379db0ed04938cc4a324d7341d1a5",
+    "metadata": {
+      "primary_tickers": [
+        "HNHAF"
+      ],
+      "mentioned_tickers": [
+        "AAPL"
+      ],
+      "event_types": [
+        "legal_regulatory",
+        "earnings",
+        "macro"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "c4c84c5505cb94ae": {
+    "content_hash": "536d1b23b9e96f820adf2dcb87e4e4006ce913ff86aceb4456576c58f4349f9d",
+    "metadata": {
+      "primary_tickers": [
+        "WMT",
+        "TGT",
+        "AMZN"
+      ],
+      "mentioned_tickers": [
+        "BABA",
+        "BIDU",
+        "SOHU",
+        "CAKE",
+        "SHAK",
+        "TXRH"
+      ],
+      "event_types": [
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "press_release"
+    }
+  },
+  "c5a6eca572f74e3c": {
+    "content_hash": "e1e77e403ed3e1c891fd31ac1a776e5afa0e06308e99b19743003aa19d57a8ba",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "MSFT"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "ccd24a1ffdc5dd00": {
+    "content_hash": "4e3529ffc82ab79f632003668a71eb2696444776d9535b47922a72d7a8bd05e3",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "other",
+        "stock_move"
+      ],
+      "sentiment": "negative",
+      "article_type": "analysis"
+    }
+  },
+  "cd0e4fa1dcdaa120": {
+    "content_hash": "9ee6a40c90ce7c7a0f975677371d128ea37ca8a626abb358fac7f4c7efd05e54",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "TSM",
+        "AVGO",
+        "NVDA",
+        "AMD",
+        "MSFT",
+        "SSNLF"
+      ],
+      "event_types": [
+        "analyst_rating",
+        "stock_move",
+        "leadership",
+        "earnings",
+        "legal_regulatory",
+        "other"
+      ],
+      "sentiment": "negative",
+      "article_type": "analysis"
+    }
+  },
+  "cd39a6ae7c3ed58f": {
+    "content_hash": "a9a4230fd64383ebfa4baaa72354a2d2a40c1030fd152fa79224d9a656fc5250",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [
+        "BAC"
+      ],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "product"
+      ],
+      "sentiment": "mixed",
+      "article_type": "analysis"
+    }
+  },
+  "cece2929215ebdea": {
+    "content_hash": "134f0b6935236dcb0e784acdac1809000a90c232b27dd0462727d3a281af7814",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "AVGO",
+        "TSM",
+        "MSFT",
+        "AAPL"
+      ],
+      "event_types": [
+        "stock_move",
+        "other"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "cef46f5fc291862f": {
+    "content_hash": "2752184ec725e9e10fa8ce6393200c808c12192a1731a24d44abfcc773b323ef",
+    "metadata": {
+      "primary_tickers": [
+        "IBM"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "partnership",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "press_release"
+    }
+  },
+  "d0cce52f926b9e19": {
+    "content_hash": "7c9affe972eacb10d7de56290c360d05326e81c7237a21597c690611038f8fda",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "IBM"
+      ],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "press_release"
+    }
+  },
+  "d5d6449e1c66f3be": {
+    "content_hash": "19ebfc3793d83c3957dae58caeaa4a20446c114b81611c9177ced29d3b91c598",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX",
+        "AAPL"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "product",
+        "partnership"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "d5fb176c2231c187": {
+    "content_hash": "93edeb2f00004aee42fbbebc8ff162c9a5f9845c793ea4a2311a39a48b84d689",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [
+        "stock_move"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "d83681ee6d13356e": {
+    "content_hash": "2b2fde5da04a3b2e003aa0a7d792159ff0b7bb9f87df04c352704f3d6e7258a0",
+    "metadata": {
+      "primary_tickers": [
+        "META"
+      ],
+      "mentioned_tickers": [
+        "GOOGL",
+        "AAPL",
+        "MSFT",
+        "TSLA",
+        "AMZN"
+      ],
+      "event_types": [
+        "stock_move",
+        "earnings",
+        "product"
+      ],
+      "sentiment": "positive",
+      "article_type": "news"
+    }
+  },
+  "d86d56746635469a": {
+    "content_hash": "94ca44577a63a67d7ef65e4179e40aaf08529688be741e2a95bc436fb21c4052",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [
+        "GOOGL",
+        "AMZN",
+        "AAPL",
+        "META",
+        "MSFT",
+        "TSLA"
+      ],
+      "event_types": [
+        "stock_move",
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "df993d61a0c8246c": {
+    "content_hash": "cf58fd3e62679b5ff476f456c6136a84daa35bf8ae211ca08f10ade25707e951",
+    "metadata": {
+      "primary_tickers": [
+        "OXY",
+        "BRK-B",
+        "BRK-A"
+      ],
+      "mentioned_tickers": [
+        "AAPL",
+        "BAC",
+        "STZ",
+        "DPZ",
+        "POOL",
+        "SIRI"
+      ],
+      "event_types": [
+        "other",
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "e034817e6218b562": {
+    "content_hash": "6551d0a099df0bef52bfb83f5de81ee73d7cebab2df7d6705cd940192994a857",
+    "metadata": {
+      "primary_tickers": [
+        "INTC",
+        "TSM",
+        "AVGO"
+      ],
+      "mentioned_tickers": [
+        "QCOM",
+        "NVDA"
+      ],
+      "event_types": [
+        "stock_move",
+        "other",
+        "legal_regulatory",
+        "leadership",
+        "earnings"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "e0657f0d9603742e": {
+    "content_hash": "b468a5137fcea8afa3dd49aa51d6fb8386340ab7b7413f0421598c30cb5db755",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "e6384f5848baa155": {
+    "content_hash": "8a21e539396b32e9f64ac82a5d82428321d74a05dea6d2f6c77731fce60adead",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "analyst_rating",
+        "price_target"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "e854ca6d09d05de5": {
+    "content_hash": "4f5f5a8b9cb2e29039f16639af644f9e40574cbb623df089392e0a7ffc46cc4f",
+    "metadata": {
+      "primary_tickers": [
+        "INOD"
+      ],
+      "mentioned_tickers": [
+        "AMZN",
+        "GOOGL",
+        "META",
+        "MSFT"
+      ],
+      "event_types": [
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "e8e545b225866140": {
+    "content_hash": "570eed730d7f4ea3a0e43de1dbfcc7d5bbd1286bba1e15beca8dbb314da8ce3a",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "MORN"
+      ],
+      "event_types": [
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "ed51274d72b7772d": {
+    "content_hash": "fdeec3a8c28fe163c3ee2ec4a816821da93e33e54f85d703af00b419df3b53a4",
+    "metadata": {
+      "primary_tickers": [
+        "AAPL"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "edb1f894f718eded": {
+    "content_hash": "b0dcc3f6ac6d4fa6202de7f6728718cff87b65d73ad8a6206bf4252d9e53431a",
+    "metadata": {
+      "primary_tickers": [
+        "MSFT"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [],
+      "sentiment": "negative",
+      "article_type": "analysis"
+    }
+  },
+  "f14534287ce983bb": {
+    "content_hash": "153e707d864631841630b4b3b90a7fdd5a9af4d5309ddb9590cdb24cfeda043b",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [
+        "BLK"
+      ],
+      "event_types": [
+        "legal_regulatory",
+        "macro"
+      ],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "f3e690f106b9f30f": {
+    "content_hash": "0a85ae9912448859f56407cfb7d67232cce327f0bdb5c075ec72facc37763e09",
+    "metadata": {
+      "primary_tickers": [
+        "NVDA",
+        "APP"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "stock_move",
+        "earnings"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "f7c0da7d9a79ef47": {
+    "content_hash": "84af84f52024937679baaec62a2f2665e743f719615b5759362f6f6fc5eab1b5",
+    "metadata": {
+      "primary_tickers": [
+        "NFLX",
+        "PLTR",
+        "RCL"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "earnings",
+        "analyst_rating",
+        "stock_move"
+      ],
+      "sentiment": "positive",
+      "article_type": "analysis"
+    }
+  },
+  "fa768dcde74fcba6": {
+    "content_hash": "8d50a735d2e4793804741de9902450c33a673e310f56d79afe67d37ae8a9c029",
+    "metadata": {
+      "primary_tickers": [
+        "INTC"
+      ],
+      "mentioned_tickers": [
+        "AVGO",
+        "TSM"
+      ],
+      "event_types": [
+        "other"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  },
+  "fb61069610410004": {
+    "content_hash": "07dd21176b931aeeb9bc8ec2e41c3ce872c16d0fe7619742e00858380bd5d435",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN",
+        "SMCI",
+        "FLR"
+      ],
+      "mentioned_tickers": [
+        "CAG",
+        "HOOD",
+        "META"
+      ],
+      "event_types": [
+        "stock_move",
+        "product",
+        "earnings",
+        "leadership"
+      ],
+      "sentiment": "mixed",
+      "article_type": "news"
+    }
+  },
+  "fe3e5ac67feea3f5": {
+    "content_hash": "fde0e301938afa1d506d9c547db4cdf2ea1b0425bb74cc40ca2934fa5ac12fa0",
+    "metadata": {
+      "primary_tickers": [],
+      "mentioned_tickers": [],
+      "event_types": [],
+      "sentiment": "neutral",
+      "article_type": "analysis"
+    }
+  },
+  "fee6d2d7d0be631d": {
+    "content_hash": "b9d381b21d2f4a90a26d7cb8d852ba4ec6a03199b6d4b49e2ad4c4bbb0711dba",
+    "metadata": {
+      "primary_tickers": [
+        "AMZN"
+      ],
+      "mentioned_tickers": [],
+      "event_types": [
+        "product"
+      ],
+      "sentiment": "neutral",
+      "article_type": "news"
+    }
+  }
+}

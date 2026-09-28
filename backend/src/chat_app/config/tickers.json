@@ -1,0 +1,17 @@
+{
+  "AAPL": {"name": "Apple", "aliases": ["Apple", "Apple Inc"]},
+  "MSFT": {"name": "Microsoft", "aliases": ["Microsoft"]},
+  "AMZN": {"name": "Amazon", "aliases": ["Amazon", "Amazon.com", "AWS"]},
+  "NFLX": {"name": "Netflix", "aliases": ["Netflix"]},
+  "NVDA": {"name": "Nvidia", "aliases": ["Nvidia", "NVIDIA"]},
+  "INTC": {"name": "Intel", "aliases": ["Intel"]},
+  "IBM": {"name": "IBM", "aliases": ["IBM", "International Business Machines"]},
+  "TSLA": {"name": "Tesla", "aliases": ["Tesla"]},
+  "GOOGL": {"name": "Alphabet (Google)", "aliases": ["Google", "Alphabet", "GOOG"]},
+  "META": {"name": "Meta Platforms", "aliases": ["Meta Platforms", "Meta", "Facebook"]},
+  "AMD": {"name": "AMD", "aliases": ["Advanced Micro Devices", "AMD"]},
+  "AVGO": {"name": "Broadcom", "aliases": ["Broadcom"]},
+  "TSM": {"name": "TSMC", "aliases": ["TSMC", "Taiwan Semiconductor"]},
+  "ORCL": {"name": "Oracle", "aliases": ["Oracle"]},
+  "BABA": {"name": "Alibaba", "aliases": ["Alibaba"]}
+}
