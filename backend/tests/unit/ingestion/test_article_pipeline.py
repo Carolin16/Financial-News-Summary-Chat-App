@@ -65,6 +65,21 @@ def test_pipeline_cleans_dedupes_flags_and_enriches():
     assert nvidia.is_stub
 
 
+def test_stub_status_and_relevance_are_independent():
+    # A paywalled price-target teaser is thin, but still clearly about Nvidia.
+    teaser = (
+        "NVIDIA (NVDA) has an average rating of Buy and mean price target of $174.93, "
+        "according to analysts p PREMIUM Upgrade to read this MT Newswires article and get so "
+        "much more. Upgrade Already have a subscription? Sign in"
+    )
+    [article] = build(
+        FakeRepository([raw("NVDA", "NVDA DBS Bank Adjusts Price Target", "https://x/dbs", teaser)])
+    ).run()
+    assert article.is_stub
+    assert article.metadata.primary_tickers == ["NVDA"]  # the stub was still enriched
+    assert article.metadata.is_relevant
+
+
 @pytest.mark.skipif(not DATASET_PATH.exists(), reason="dataset not available")
 def test_real_dataset_profile():
     """Guards the ingestion rules against regressions on the actual feed."""
