@@ -11,7 +11,7 @@ from chat_app.ingestion.deduplicator import Deduplicator
 from chat_app.ingestion.loader import JsonArticleRepository
 from chat_app.ingestion.stub_detector import StubDetector
 
-DATASET_PATH = Path(__file__).parents[3] / "data" / "stock_news.json"
+DATASET_PATH = Path(__file__).parents[4] / "data" / "stock_news.json"
 
 
 class FakeRepository:
