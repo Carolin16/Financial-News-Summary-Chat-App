@@ -3,6 +3,7 @@
 A chat assistant that answers questions about the financial news in `data/stock_news.json`,
 with every statement cited to a source article and checked in code before it's shown.
 
+Demo Link - https://financial-news-summary-chat-app-production.up.railway.app/
 To run it, see [Setup](#setup).
 
 ## Contents
