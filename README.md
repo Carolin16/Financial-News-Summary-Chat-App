@@ -591,8 +591,7 @@ models, data, vector store, ingestion, retrieval, API, and evaluation. Only
 
 ```bash
 cp .env.example .env                                   # add OPENAI_API_KEY
-docker compose up --build -d                           # qdrant -> backend -> ui
-docker compose run --rm backend chat-index             # offline indexing (idempotent)
+docker compose up --build -d                           # backend indexes on startup (idempotent)
 open http://localhost:3000
 ```
 

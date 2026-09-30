@@ -34,4 +34,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
-CMD ["uvicorn", "chat_app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Build/refresh the index first (idempotent: only changed articles are re-embedded), then serve.
+# "::" binds IPv4 and IPv6, so Railway's private network can reach it either way.
+CMD ["sh", "-c", "chat-index && uvicorn chat_app.api.main:app --host :: --port 8000"]
