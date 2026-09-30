@@ -1,4 +1,4 @@
-"""Offline preparation: load -> clean -> flag stubs -> deduplicate -> enrich metadata."""
+"""Turns the raw news feed into clean, unique articles tagged with the companies they're about."""
 
 import logging
 from collections.abc import Sequence
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ArticlePipeline:
-    """Turns raw feed entries into unique, cleaned, metadata-enriched articles."""
+    """Runs every raw news entry through each preparation stage, in order."""
 
     def __init__(
         self,
@@ -26,7 +26,7 @@ class ArticlePipeline:
         extractor: MetadataExtractor,
         enrichment_workers: int,
     ) -> None:
-        """Wire the pipeline stages; each is independently replaceable and testable."""
+        """Plug in each stage, so any one can be swapped or faked in tests."""
         self._repository = repository
         self._cleaner = cleaner
         self._stub_detector = stub_detector
@@ -35,7 +35,7 @@ class ArticlePipeline:
         self._enrichment_workers = enrichment_workers
 
     def run(self) -> list[Article]:
-        """Execute every stage and return articles ready for chunking."""
+        """Load, clean, dedupe, and tag every article, returning them ready for chunking."""
         raw_articles = self._repository.load()
         cleaned = [self._to_article(raw) for raw in raw_articles]
         unique = self._deduplicator.deduplicate(cleaned)
@@ -50,6 +50,7 @@ class ArticlePipeline:
         return enriched
 
     def _to_article(self, raw: RawArticle) -> Article:
+        """Clean one raw entry and note whether it is too thin to rely on."""
         cleaned = self._cleaner.clean(raw)
         return Article(
             article_id=article_id_for(cleaned.link),
@@ -61,7 +62,7 @@ class ArticlePipeline:
         )
 
     def _enrich(self, articles: Sequence[Article]) -> list[Article]:
-        # Extraction is I/O-bound (one LLM call per uncached article), so threads suffice.
+        """Attach company, event, and tone metadata to each article, several at a time."""
         with ThreadPoolExecutor(max_workers=self._enrichment_workers) as pool:
             metadata = list(pool.map(self._extractor.extract, articles))
         return [

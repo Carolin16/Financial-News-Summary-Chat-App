@@ -1,9 +1,4 @@
-"""Deterministic query understanding: what is being asked, and about which companies.
-
-Routing decides which answering rules apply (refuse to advise, disclaim timing, ...), so it
-is rule-based rather than LLM-based: instant, free, reproducible, and unit-testable. Rules
-are data (`INTENT_RULES`), checked in priority order, so adding an intent is a table entry.
-"""
+"""Reads a question to work out what is being asked and which companies it names."""
 
 import re
 from enum import StrEnum
@@ -14,24 +9,24 @@ from chat_app.core.ticker_registry import TickerRegistry
 
 
 class Intent(StrEnum):
-    """Question categories, each with its own answering policy."""
+    """The types of question we recognise, each handled in its own way."""
 
-    ADVICE = "advice"
-    PREDICTION = "prediction"
-    LIVE_DATA = "live_data"
-    TIMING = "timing"
-    PRICE_TARGET = "price_target"
-    ANALYST_VIEW = "analyst_view"
-    CAUSAL = "causal"
-    NEWS = "news"
+    ADVICE = "advice"  # "Should I buy Nvidia?"
+    PREDICTION = "prediction"  # "Will Apple stock go up?"
+    LIVE_DATA = "live_data"  # "What's Apple's current market cap?"
+    TIMING = "timing"  # "What happened yesterday?"
+    PRICE_TARGET = "price_target"  # "What's Nvidia's price target?"
+    ANALYST_VIEW = "analyst_view"  # "What do analysts say about Intel?"
+    CAUSAL = "causal"  # "Why did Intel stock jump?"
+    NEWS = "news"  # anything else, e.g. "What's the latest on Intel?"
 
 
 def _rx(pattern: str) -> re.Pattern[str]:
+    """Build a pattern that ignores upper and lower case."""
     return re.compile(pattern, re.IGNORECASE)
 
 
-# Ordered: the first matching rule wins. Refusal-type intents come first so that, e.g.,
-# "should I buy Nvidia given its price target?" is treated as advice, not a lookup.
+# Checked top to bottom and the first match wins, so advice and forecasts are caught first.
 INTENT_RULES: tuple[tuple[Intent, re.Pattern[str]], ...] = (
     (
         Intent.ADVICE,
@@ -45,15 +40,18 @@ INTENT_RULES: tuple[tuple[Intent, re.Pattern[str]], ...] = (
         _rx(
             r"\b(will .+ (go|rise|fall|drop|climb|increase|decrease|crash|rally|recover)"
             r"|going to (go|rise|fall|drop)|forecast|predict|outlook for .+ (stock|shares)"
-            r"|where will|expected to (rise|fall))"
+            r"|where will|expected to (rise|fall)"
+            # "Which stocks will be the biggest winners?" is also a forecast.
+            r"|will .+ (outperform|be the (best|biggest|top)|winners?))"
         ),
     ),
+    # Live only with "current" or "right now": a plain "market cap" may be in an article.
     (
         Intent.LIVE_DATA,
         _rx(
-            r"\b((current|today'?s|live|latest|real[- ]time) (market cap|price|stock price|"
-            r"share price|valuation|quote)|market cap(italization)?|trading at (right )?now"
-            r"|price right now)\b"
+            r"\b((current|today'?s|live|latest|real[- ]time) (market cap(italization)?|price"
+            r"|stock price|share price|valuation|quote)|trading at (right )?now"
+            r"|(price|market cap|valuation) right now)\b"
         ),
     ),
     (
@@ -75,7 +73,7 @@ INTENT_RULES: tuple[tuple[Intent, re.Pattern[str]], ...] = (
 )
 
 
-# Which live figure a LIVE_DATA question asks for, used to word the "unavailable" notice.
+# Which live figure was asked for, so the "no live data" note can name it.
 LIVE_METRICS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("market cap", _rx(r"market cap|capitali[sz]ation")),
     ("valuation", _rx(r"valuation")),
@@ -83,8 +81,7 @@ LIVE_METRICS: tuple[tuple[str, re.Pattern[str]], ...] = (
 DEFAULT_LIVE_METRIC = "share price"
 
 
-# Vocabulary that marks a question as clearly about financial news. Questions matching
-# neither this nor a known company go to the scope guard instead of straight to retrieval.
+# Finance words. A question with none of these and no company gets an extra topic check.
 FINANCE_VOCABULARY = _rx(
     r"\b(stocks?|shares?|equit(y|ies)|market|nasdaq|dow|s&p|index|earnings|revenue|profit"
     r"|sales|guidance|analysts?|ratings?|upgrade|downgrade|price target|valuation|dividend"
@@ -96,7 +93,7 @@ FINANCE_VOCABULARY = _rx(
 
 
 class QueryPlan(BaseModel):
-    """The analyzer's verdict for one question."""
+    """What we worked out about one question."""
 
     intent: Intent
     tickers: list[str]
@@ -108,19 +105,19 @@ class QueryPlan(BaseModel):
 
 
 class QueryAnalyzer:
-    """Classifies intent with ordered rules and resolves companies via the registry."""
+    """Sorts a question into a type and finds the companies it mentions."""
 
     def __init__(
         self,
         registry: TickerRegistry,
         rules: tuple[tuple[Intent, re.Pattern[str]], ...] = INTENT_RULES,
     ) -> None:
-        """Rules are injectable so deployments can extend or reorder them."""
+        """Take the list of known companies and the question-type rules."""
         self._registry = registry
         self._rules = rules
 
     def analyze(self, question: str) -> QueryPlan:
-        """Return the question's intent (NEWS if nothing more specific) and tickers."""
+        """Return the question type (plain news if no rule matches) and the companies named."""
         text = question.strip()
         intent = next((i for i, pattern in self._rules if pattern.search(text)), Intent.NEWS)
         tickers = self._registry.find_mentions(text)
@@ -133,6 +130,7 @@ class QueryAnalyzer:
 
 
 def _live_metric(text: str) -> str:
+    """Name the live figure asked for, e.g. "market cap", or "share price" if unclear."""
     return next(
         (name for name, pattern in LIVE_METRICS if pattern.search(text)), DEFAULT_LIVE_METRIC
     )

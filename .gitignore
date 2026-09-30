@@ -8,3 +8,4 @@ ui/node_modules/
 ui/dist/
 .qdrant/
 .qdrant_staging/
+backend/tests/eval/runs/

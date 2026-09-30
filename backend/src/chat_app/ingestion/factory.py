@@ -1,37 +1,37 @@
 """Composition root for offline ingestion: builds concrete stages from settings."""
 
+from chat_app.config.relevance import RelevanceConfig
 from chat_app.config.settings import Settings
 from chat_app.core.ticker_registry import TickerRegistry
-from chat_app.generation.llm_client import OpenAILlmClient
 from chat_app.ingestion.article_pipeline import ArticlePipeline
 from chat_app.ingestion.cleaning.config import CleaningConfig
 from chat_app.ingestion.cleaning.factory import build_text_cleaner
 from chat_app.ingestion.deduplicator import Deduplicator
-from chat_app.ingestion.enrichment_cache import CachedMetadataExtractor
 from chat_app.ingestion.loader import JsonArticleRepository
-from chat_app.ingestion.metadata_extractors import (
-    FallbackMetadataExtractor,
-    HeuristicMetadataExtractor,
-    LlmMetadataExtractor,
-)
+from chat_app.ingestion.relevance.article_type import CueArticleTypeClassifier
+from chat_app.ingestion.relevance.enricher import RuleBasedEnricher
+from chat_app.ingestion.relevance.entities import RegistryEntityMatcher
+from chat_app.ingestion.relevance.events import KeywordEventTagger, LexiconSentimentScorer
+from chat_app.ingestion.relevance.salience import WeightedSalienceScorer
 from chat_app.ingestion.stub_detector import StubDetector
 
 
-def build_metadata_extractor(settings: Settings) -> CachedMetadataExtractor:
-    """Cache -> LLM -> heuristic fallback, so indexing works even when the LLM is down."""
+def build_enricher(settings: Settings) -> RuleBasedEnricher:
+    """Build the rule-based relevance tagger from the ticker list and rules file."""
     registry = TickerRegistry.from_json(settings.tickers_path)
-    llm_extractor = LlmMetadataExtractor(
-        OpenAILlmClient(settings), registry, settings.enrichment_max_chars
-    )
-    heuristic = HeuristicMetadataExtractor(registry, settings.enrichment_fallback_min_mentions)
-    return CachedMetadataExtractor(
-        FallbackMetadataExtractor(llm_extractor, heuristic), settings.enrichment_cache_path
+    rules = RelevanceConfig.from_toml(settings.relevance_rules_path)
+    return RuleBasedEnricher(
+        matcher=RegistryEntityMatcher(registry, rules.entities),
+        scorer=WeightedSalienceScorer(rules.salience),
+        classifier=CueArticleTypeClassifier(rules.article_type),
+        event_tagger=KeywordEventTagger(rules.events),
+        sentiment_scorer=LexiconSentimentScorer(rules.sentiment),
+        tiers=rules.tiers,
+        enumeration_min_companies=rules.entities.enumeration_min_companies,
     )
 
 
-def build_article_pipeline(
-    settings: Settings, extractor: CachedMetadataExtractor
-) -> ArticlePipeline:
+def build_article_pipeline(settings: Settings, enricher: RuleBasedEnricher) -> ArticlePipeline:
     """Assemble the article preparation pipeline from configuration."""
     return ArticlePipeline(
         repository=JsonArticleRepository(settings.data_path),
@@ -45,6 +45,6 @@ def build_article_pipeline(
             title_threshold=settings.title_duplicate_threshold,
             shingle_size=settings.shingle_size,
         ),
-        extractor=extractor,
+        extractor=enricher,
         enrichment_workers=settings.enrichment_workers,
     )

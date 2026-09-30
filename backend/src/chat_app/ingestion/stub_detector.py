@@ -1,9 +1,4 @@
-"""Flags thin articles (paywalls, teasers) whose answers must be marked low-confidence.
-
-A stub is low-confidence, not irrelevant: "DBS Bank Adjusts NVIDIA Price Target to $160
-From $175" is a stub but clearly about Nvidia. Stub status is therefore a separate field
-that never feeds into relevance.
-"""
+"""Flags thin articles (paywalled or teaser-only) so answers using them are low-confidence."""
 
 from enum import StrEnum
 
@@ -11,25 +6,21 @@ from chat_app.ingestion.cleaning.models import CleanedArticle
 
 
 class StubReason(StrEnum):
-    """Why an article counts as thin content."""
+    """The reason an article was flagged as thin."""
 
-    TRUNCATED = "truncated"  # the cleaner found a paywall or "Continue Reading" marker
-    TOO_SHORT = "too_short"  # complete, but below the configured length
+    TRUNCATED = "truncated"  # cut off by a paywall or "Continue Reading"
+    TOO_SHORT = "too_short"  # complete, but too short to be useful
 
 
 class StubDetector:
-    """Decides whether an article has too little real content to be relied on.
-
-    Consumes the cleaner's signals rather than re-scanning raw text: the cleaner reports a
-    truncation marker, this class makes the decision (SRP).
-    """
+    """Decides if an article has too little real text to rely on, using what cleaning found."""
 
     def __init__(self, min_words: int) -> None:
-        """`min_words` is the cleaned-length floor for a full article."""
+        """Set the minimum word count a full article must have."""
         self._min_words = min_words
 
     def reason(self, article: CleanedArticle) -> StubReason | None:
-        """Why `article` is a stub, or None if it is a full article."""
+        """Return why the article is thin, or None if it is a full article."""
         if article.signals.truncation_marker_found:
             return StubReason.TRUNCATED
         if len(article.text.split()) < self._min_words:
@@ -37,5 +28,5 @@ class StubDetector:
         return None
 
     def is_stub(self, article: CleanedArticle) -> bool:
-        """True if cleaning found a truncation marker or the cleaned text is too short."""
+        """True if the article was cut off or is too short."""
         return self.reason(article) is not None

@@ -1,17 +1,4 @@
-"""Collapses repeated articles so coverage is not overstated.
-
-Two passes over *cleaned* articles:
-
-1. Exact duplicates share a link: the same story filed under several ticker keys (13 links
-   carry 20 extra entries in the dataset). Copies can differ in scrape-time details (video
-   timestamps, a live price quote), so the most complete copy is kept.
-2. Near-duplicates are re-publications of the same headline under a new link (e.g. an
-   "Update:" version). They must match on headline *and* body; stub bodies are truncated
-   mid-sentence, so for stubs the headline alone decides.
-
-The kept article records every ticker key it was filed under (`source_keys`) and the links
-it absorbed (`merged_links`). Both are provenance only and never used for relevance.
-"""
+"""Removes repeated articles so the same story is never counted twice."""
 
 import itertools
 import re
@@ -24,19 +11,20 @@ _WORD = re.compile(r"\w+")
 
 
 class Deduplicator:
-    """Merges exact and near-duplicate articles, keeping the most complete version."""
+    """Merges copies of the same story and keeps the most complete one."""
 
     def __init__(self, body_threshold: float, title_threshold: float, shingle_size: int) -> None:
-        """Configure similarity thresholds (Jaccard, 0-1) and body shingle length in words."""
+        """Set how similar headlines and bodies must be (0-1) to count as the same story."""
         self._body_threshold = body_threshold
         self._title_threshold = title_threshold
         self._shingle_size = shingle_size
 
     def deduplicate(self, articles: Sequence[Article]) -> list[Article]:
-        """Return unique articles in first-seen order with provenance merged."""
+        """Return one article per story, in original order, noting every copy merged in."""
         return self._merge_near_duplicates(self._merge_by_link(articles))
 
     def _merge_by_link(self, articles: Sequence[Article]) -> list[Article]:
+        """Pass 1: merge entries with the exact same link (one story under several tickers)."""
         by_link: dict[str, Article] = {}
         for article in articles:
             existing = by_link.get(article.link)
@@ -48,6 +36,7 @@ class Deduplicator:
         return list(by_link.values())
 
     def _merge_near_duplicates(self, articles: list[Article]) -> list[Article]:
+        """Pass 2: merge re-publications of a story under a different link."""
         survivors = list(articles)
         for first, second in itertools.combinations(articles, 2):
             current = {a.link: a for a in survivors}
@@ -62,11 +51,7 @@ class Deduplicator:
         return survivors
 
     def are_near_duplicates(self, first: Article, second: Article) -> bool:
-        """Same headline (ignoring an "Update:" prefix) and matching bodies.
-
-        The headline check is required because templated series (analyst-note teasers,
-        "intrinsic value" reports) share most of their body text yet are different news.
-        """
+        """True if two articles are the same story: near-identical headline and body."""
         title_similarity = _jaccard(_title_tokens(first.title), _title_tokens(second.title))
         if title_similarity < self._title_threshold:
             return False
@@ -79,11 +64,7 @@ class Deduplicator:
 
 
 def preferred_version(first: Article, second: Article) -> tuple[Article, Article]:
-    """Return (keep, drop), preferring the version with more content.
-
-    On a tie an "Update:" version wins, then the one seen first. More content wins over
-    recency because only the text we hold can ground an answer.
-    """
+    """Pick which copy to keep: the longer one, then an "Update:" version, then the first."""
     first_words, second_words = len(first.text.split()), len(second.text.split())
     if first_words != second_words:
         return (first, second) if first_words > second_words else (second, first)
@@ -93,10 +74,12 @@ def preferred_version(first: Article, second: Article) -> tuple[Article, Article
 
 
 def _is_update(article: Article) -> bool:
+    """True if the headline starts with "Update:"."""
     return bool(_UPDATE_PREFIX.match(article.title))
 
 
 def _merge(keep: Article, drop: Article) -> Article:
+    """Keep one copy, adding the other's ticker keys and links so nothing is lost."""
     keys = list(dict.fromkeys([*keep.source_keys, *drop.source_keys]))
     links = [link for link in [*keep.merged_links, drop.link, *drop.merged_links]]
     merged_links = [link for link in dict.fromkeys(links) if link != keep.link]
@@ -104,10 +87,12 @@ def _merge(keep: Article, drop: Article) -> Article:
 
 
 def _title_tokens(title: str) -> set[str]:
+    """The headline's words, lowercased and without any "Update:" prefix."""
     return set(_WORD.findall(_UPDATE_PREFIX.sub("", title).lower()))
 
 
 def _shingles(text: str, size: int) -> set[tuple[str, ...]]:
+    """Every run of `size` consecutive words, used to compare two bodies."""
     words = _WORD.findall(text.lower())
     if len(words) < size:
         return {tuple(words)}
@@ -115,6 +100,7 @@ def _shingles(text: str, size: int) -> set[tuple[str, ...]]:
 
 
 def _jaccard[T](first: set[T], second: set[T]) -> float:
+    """Overlap between two sets, from 0 (nothing shared) to 1 (identical)."""
     if not first and not second:
         return 1.0
     return len(first & second) / len(first | second)

@@ -1,4 +1,4 @@
-"""Reads the raw news dataset from its JSON file."""
+"""Reads stock_news.json and hands back every news entry exactly as it appears."""
 
 import json
 from pathlib import Path
@@ -7,14 +7,14 @@ from chat_app.core.models import RawArticle
 
 
 class JsonArticleRepository:
-    """`ArticleRepository` backed by a `{ticker: [article, ...]}` JSON file."""
+    """Supplies raw articles from a JSON file grouped by ticker."""
 
     def __init__(self, path: Path) -> None:
-        """Bind the repository to the dataset file at `path`."""
+        """Remember which dataset file to read."""
         self._path = path
 
     def load(self) -> list[RawArticle]:
-        """Return every entry in file order; duplicates are kept for the deduplicator."""
+        """Return all entries in file order, duplicates included (deduplication happens later)."""
         with self._path.open(encoding="utf-8") as handle:
             data: dict[str, list[dict[str, str]]] = json.load(handle)
         return [

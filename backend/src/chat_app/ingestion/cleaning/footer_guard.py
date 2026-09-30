@@ -1,11 +1,4 @@
-"""Safety check before stripping a publisher footer to the end of the text.
-
-Footers are recognised by their opening line, but a misfire would delete real article text
-after it. The guard ignores sentences that match known footer boilerplate or merely echo the
-article's title, and refuses the strip if any remaining *full sentence* carries article
-content: a company name, a ticker, or a number. Headline fragments without terminal
-punctuation (e.g. "Read More on AAPL:" lists) are not treated as content.
-"""
+"""Makes sure cutting a publisher footer never deletes real article text after it."""
 
 import re
 from collections.abc import Iterable
@@ -19,10 +12,10 @@ _SENTENCE_END = re.compile(r"[.!?][\"')]*$")
 
 
 class FooterGuard:
-    """Decides whether a footer tail may be removed."""
+    """Says whether a footer is safe to cut or hides real content that must stay."""
 
     def __init__(self, config: FooterSafetyConfig, company_terms: Iterable[str]) -> None:
-        """`company_terms` are names and tickers whose presence signals article content."""
+        """Take the company names and tickers whose presence means "this is real content"."""
         self._config = config
         alternatives = [re.escape(t) for t in sorted(set(company_terms), key=len, reverse=True)]
         self._content = re.compile(
@@ -32,7 +25,7 @@ class FooterGuard:
         )
 
     def content_sentences(self, tail: str, title: str = "") -> list[str]:
-        """Sentences in `tail` that are not boilerplate and carry content signals."""
+        """Return the sentences after the footer marker that look like real article content."""
         title_key = _key(title)
         return [
             s
@@ -41,6 +34,7 @@ class FooterGuard:
         ]
 
     def _carries_content(self, sentence: str) -> bool:
+        """True for a full, non-boilerplate sentence that names a company or has a number."""
         if any(p.search(sentence) for p in self._config.boilerplate_regexes):
             return False
         is_full_sentence = (
@@ -52,5 +46,5 @@ class FooterGuard:
 
 
 def _key(text: str) -> str:
-    """Comparison key for title echoes: lowercase letters and digits only."""
+    """Simplify text to lowercase letters and digits, to spot sentences repeating the title."""
     return "".join(ch for ch in text.lower() if ch.isalnum())

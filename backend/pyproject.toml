@@ -32,6 +32,9 @@ dev = [
     "black>=26.5",
     "ruff>=0.16",
     "mypy>=2.3",
+    # Eval cases file (tests/eval/cases.yaml); stubs keep strict mypy happy.
+    "pyyaml>=6.0",
+    "types-PyYAML>=6.0",
 ]
 
 [tool.hatch.build.targets.wheel]

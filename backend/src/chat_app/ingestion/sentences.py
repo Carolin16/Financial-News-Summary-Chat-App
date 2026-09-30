@@ -1,20 +1,28 @@
-"""Sentence segmentation shared by cleaning, chunking, and answer verification."""
+"""Sentence segmentation shared by cleaning, chunking, relevance, and answer verification."""
 
-from functools import lru_cache
+import threading
 
 import pysbd
 
+# pysbd segmenters keep per-call state and are not thread-safe; sharing one across the
+# enrichment thread pool returned wrong spans intermittently. One instance per thread.
+_local = threading.local()
 
-@lru_cache
+
 def _segmenter() -> pysbd.Segmenter:
     # pysbd handles abbreviations like "U.S." and "Inc." and decimals like "$4.5" that a
     # naive split on ". " would break, which matters for keeping figures intact.
-    return pysbd.Segmenter(language="en", clean=False)
+    if not hasattr(_local, "segmenter"):
+        _local.segmenter = pysbd.Segmenter(language="en", clean=False)
+    segmenter: pysbd.Segmenter = _local.segmenter
+    return segmenter
 
 
-@lru_cache
 def _span_segmenter() -> pysbd.Segmenter:
-    return pysbd.Segmenter(language="en", clean=False, char_span=True)
+    if not hasattr(_local, "span_segmenter"):
+        _local.span_segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
+    segmenter: pysbd.Segmenter = _local.span_segmenter
+    return segmenter
 
 
 def split_sentences(text: str) -> list[str]:

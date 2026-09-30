@@ -1,4 +1,7 @@
-"""Translates domain `SearchFilters` into a Qdrant filter."""
+"""Turns the app's search filters into a filter Qdrant understands.
+
+Covers ticker, sentiment, event type, etc., so search only returns chunks that match.
+"""
 
 from qdrant_client import models
 
@@ -6,7 +9,7 @@ from chat_app.core.models import SearchFilters
 
 
 def build_filter(filters: SearchFilters) -> models.Filter | None:
-    """Return a Qdrant filter, or None when no constraint applies."""
+    """Build a Qdrant filter where every set field must match. Return None if nothing is set."""
     must: list[models.Condition] = []
     if filters.tickers:
         ticker_match = models.MatchAny(any=filters.tickers)

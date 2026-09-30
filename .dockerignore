@@ -1,0 +1,18 @@
+# Build context for backend/Dockerfile is the repo root: send only what the image needs.
+# (The UI builds from ui/ with its own context, so it's excluded here.)
+.git
+.github
+.claude
+.env
+.qdrant
+.qdrant_staging
+docs
+ui
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.gitkeep
+backend/tests

@@ -14,6 +14,8 @@ class NumberedCitation(BaseModel):
     title: str
     link: str
     is_partial: bool
+    # Identifies the exact passage cited, so evaluation can check claims against it.
+    chunk_id: str
 
 
 class MetaEvent(BaseModel):

@@ -1,4 +1,4 @@
-"""Numbered sources: the only material the LLM may use, and what citations point to."""
+"""Numbers the found chunks [1], [2] for the LLM may use."""
 
 from collections.abc import Sequence
 
@@ -38,6 +38,7 @@ def format_sources(sources: Sequence[Source], focus_tickers: Sequence[str]) -> s
 
 
 def _format_source(source: Source, focus_tickers: Sequence[str]) -> str:
+    """Write one source as "[n] (warnings)" followed by its text, e.g. "[2] (PARTIAL)"."""
     chunk = source.retrieved.chunk
     labels = []
     if chunk.is_stub:

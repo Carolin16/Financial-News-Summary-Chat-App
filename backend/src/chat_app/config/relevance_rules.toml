@@ -1,0 +1,201 @@
+# Relevance rules: how companies, article types, events, and tone are read from text.
+# Everything here is data: tuning a weight or adding a cue needs no code change.
+
+# ---------------------------------------------------------------------------------------
+# Entity matching
+# ---------------------------------------------------------------------------------------
+[entities]
+# Exchanges accepted in tagged forms such as "(NASDAQ:INTC)" or "(NYSE: WMT)".
+exchanges = ["NASDAQ", "NYSE", "NYSEARCA", "NYSEAMERICAN", "AMEX", "OTC", "TSX", "LSE"]
+# Bare parenthesised symbols after a capitalised name, e.g. "Cerence (CRNC)", identify
+# companies the registry does not track. These acronyms are not companies.
+not_tickers = [
+  "AI", "AGI", "CEO", "CFO", "COO", "CTO", "DEI", "ETF", "ETFS", "EPS", "IPO", "GDP", "CPI",
+  "US", "USA", "UK", "EU", "UN", "SEC", "FTC", "DOJ", "FDA", "FCC", "IRS", "NYSE", "NASDAQ",
+  "Q1", "Q2", "Q3", "Q4", "FY", "YTD", "YOY", "TTM", "PE", "EV", "EVS", "LLM", "LLMS", "GPU",
+  "GPUS", "CPU", "CPUS", "API", "SAAS", "IT", "HR", "PR", "TV", "VR", "AR", "PC", "PCS",
+  "NFL", "NBA", "MLB", "WSJ", "CNBC", "BBC", "CEOS", "SMA", "RSI", "MACD", "ROI", "ROE",
+  "EBITDA", "GAAP", "OSHA", "DOGE", "PBS", "MEA", "BFSI", "FMCG", "SIEM", "AEC", "NT",
+  "DCF", "ESP", "NDR", "EHR", "EMR", "AG", "CAGR", "IP", "FCPA", "ISV", "TAM", "HPC", "ML",
+  "NLP", "CDSS", "ADAS", "SOC", "DUV", "EUV", "HBM", "ASP", "ARR", "CTE", "TBI", "MEA", "SMA",
+]
+# Trailing generic words also dropped to form a short alias, so "CyberArk Software" is found
+# as "CyberArk" in the headline.
+name_generic_words = [
+  "Software", "Technologies", "Technology", "Systems", "Industries", "Foods", "Brands",
+  "Networks", "Semiconductor", "Pharmaceuticals", "Therapeutics", "Financial", "Energy",
+]
+# When an untracked company is written formally ("Cerence Inc. (CRNC)"), the name before
+# the symbol is learned for that article. Legal suffixes and leading filler are stripped.
+# A legal suffix right before a bare symbol ("Cal-Maine Foods, Inc. CALM") is enough
+# evidence even if the symbol appears once.
+name_suffixes = [
+  "Inc", "Inc.", "Corp", "Corp.", "Corporation", "Co", "Co.", "Company", "Ltd", "Ltd.",
+  "Limited", "plc", "PLC", "N.V.", "NV", "S.A.", "SA", "AG", "SE", "Holding", "Holdings",
+  "Group", "LLC", "L.P.", "Sponsored", "ADR", "(The)",
+]
+name_leading_words = [
+  "why", "how", "what", "is", "are", "the", "shares", "stock", "stocks", "buy", "sell",
+  "and", "of", "at", "for", "as", "like", "such", "including", "while", "both", "rival",
+  "competitor", "competitors", "peer", "peers", "whereas", "but", "however", "meanwhile",
+  "also", "so", "yet", "then", "now", "today", "here", "in", "on", "by", "with", "from",
+]
+# A bare symbol after a name ("Cerence CRNC shares") counts only if it occurs this often.
+bare_symbol_min_count = 2
+# Learned names shorter than this are ignored (too likely to match ordinary words).
+learned_name_min_chars = 4
+# A sentence naming at least this many distinct companies is an enumeration ("key players
+# include ..."). A company mentioned ONLY in such sentences, and not in the title, is
+# incidental: kept for audit but dropped from primary/mentioned.
+enumeration_min_companies = 8
+
+# ---------------------------------------------------------------------------------------
+# Salience: a score in [0, 1] of how central a company is to an article.
+# ---------------------------------------------------------------------------------------
+[salience]
+# Headline: the first company named is the subject; others named there get less.
+title_subject_weight = 0.45    # the first company in the headline (replaces title_weight)
+title_weight = 0.15            # named in the headline, but not first
+lead_weight = 0.10             # first mentioned within the lead
+exchange_tagged_weight = 0.05  # referred to formally, e.g. "Intel (NASDAQ:INTC)"
+frequency_weight = 0.10        # mentions per 100 words, capped
+share_weight = 0.25            # share of company mentions, relative to the most-mentioned
+lead_words = 60
+frequency_cap_per_100_words = 2.0
+frequency_min_mentions = 2     # one mention in a short teaser is not "frequent"
+
+[tiers]
+primary_threshold = 0.50
+# In a press release, companies other than the issuer are partners, backers, or rows in a
+# "key players" list, so anything below primary is incidental rather than mentioned.
+incidental_article_types = ["press_release"]
+# Types whose format spreads attention over many companies need stronger evidence: a
+# roundup or list should not make every company it touches "primary".
+[tiers.primary_threshold_by_type]
+listicle = 0.80
+market_wrap = 0.70
+
+# ---------------------------------------------------------------------------------------
+# Article type: first matching rule wins (order = priority). Cues are checked against the
+# title, and against the lead (first `lead_chars` characters) where `in_lead = true`.
+# ---------------------------------------------------------------------------------------
+[article_type]
+lead_chars = 600
+
+[[article_type.rules]]
+label = "press_release"
+patterns = [
+  '\((?:BUSINESS WIRE|PRNewswire|GLOBE NEWSWIRE|ACCESSWIRE|Newsfile)\)',
+  'For Immediate Release',
+  'Market (?:Size )?to (?:Reach|Soar|Grow)',
+  '\b(?:today announced|announced today)\b',
+]
+in_lead = true
+
+[[article_type.rules]]
+label = "analyst_note"
+patterns = [
+  '(?i)\bprice target\b',
+  '(?i)\b(?:upgrades?|downgrades?)\b.{0,40}\b(?:to|from)\b',
+  '(?i)\binitiates? coverage\b',
+  '(?i)\bAnalyst Report:',
+]
+in_lead = false
+
+[[article_type.rules]]
+label = "market_wrap"
+patterns = [
+  '(?i)\bMarket Minute\b',
+  '(?i)\bMorning Brief\b',
+  '(?i)^Sector Update\b',
+  '(?i)^Stock Market Today\b',
+  '(?i)^Equities (?:Mixed|Higher|Lower)\b',
+  '(?i):\s*Wealth!?$',
+]
+in_lead = false
+
+[[article_type.rules]]
+label = "listicle"
+patterns = [
+  '(?i)\b\d+\s+(?:best|top|most|high|cheap|biggest|popular)\b',
+  '(?i)\bwe recently (?:compiled|published) a list\b',
+  '(?i)\bAmong the Best\b',
+  '(?i)\bHighlights\b.*,.*(?:and|&)',
+  '(?i)\boriginals ever made\b',
+]
+in_lead = true
+
+[[article_type.rules]]
+label = "opinion"
+patterns = [
+  '(?i)^Should You\b',
+  '(?i)^Prediction:',
+  '(?i)^Where Will\b',
+  '(?i)^Is .{1,60}\ba Buy\b',
+  '(?i)^Fade the\b',
+  '(?i)\bBuy, Sell or Hold\b',
+]
+in_lead = false
+
+# ---------------------------------------------------------------------------------------
+# Event types: keyword patterns, matched in the title and in sentences that name one of
+# the article's primary companies.
+# ---------------------------------------------------------------------------------------
+[events]
+price_target = ['(?i)\bprice targets?\b', '(?i)\btarget price\b', '(?i)\bPT\b']
+analyst_rating = [
+  '(?i)\b(?:upgrade[sd]?|downgrade[sd]?|reiterate[sd]?|initiate[sd]? coverage)\b',
+  '(?i)\b(?:overweight|underweight|outperform|underperform|neutral|equal[- ]weight) rating\b',
+  '(?i)\b(?:buy|sell|hold) rating\b',
+  '(?i)\banalysts?\b.{0,60}\b(?:say|says|said|expect|expects|argue|argues|recommend)',
+]
+earnings = [
+  '(?i)\b(?:earnings|EPS|quarterly results|fiscal (?:first|second|third|fourth)[- ]quarter|revenue guidance)\b',
+  '(?i)\b(?:beat|missed?) (?:estimates|expectations)\b',
+]
+deal = [
+  '(?i)\b(?:acquir(?:e|es|ed|ing)|acquisition|merger|takeover|buyout|bid for)\b',
+  '(?i)\b(?:deal|deals) (?:to|with|for)\b',
+  '(?i)\b(?:split (?:up|the company)|break(?:s|ing)? up|spin[- ]?off|stake in)\b',
+  '(?i)\b(?:potential|possible|exploring|considering|weighing|reported)\b.{0,30}\b(?:deals?|transactions?|bids?|takeover)\b',
+  '(?i)\b(?:in talks with|sell(?:ing)? (?:certain |some |its )?(?:assets|units?|business(?:es)?|factories|a stake)|snap(?:ping)? up)\b',
+]
+product = ['(?i)\b(?:launch(?:es|ed)?|unveil(?:s|ed)?|introduc(?:es|ed)|new (?:model|chip|iPhone|device|app))\b']
+partnership = ['(?i)\b(?:partner(?:s|ed|ship)? with|collaborat(?:e|es|ion) with|teams up)\b']
+legal_regulatory = [
+  '(?i)\b(?:lawsuit|antitrust|regulator[sy]?|investigation|probe|fined?|settlement|export (?:controls|restrictions))\b',
+]
+# Changes in leadership, not every sentence that mentions an executive.
+leadership = [
+  '(?i)\b(?:appoint(?:s|ed|ment)|resign(?:s|ed|ation)|steps? down|stepped down|ousted|succession)\b',
+  '(?i)\bnames? .{0,40}\bas (?:its )?(?:new )?(?:CEO|CFO|chief|president|chair)',
+  '(?i)\b(?:new|interim|former) (?:CEO|chief executive)\b',
+]
+stock_move = [
+  '(?i)\b(?:shares|stock)\b.{0,40}\b(?:rose|rise|rising|jump(?:ed|s)?|surg(?:e|ed|es|ing)|soar(?:ed|s|ing)?|rall(?:y|ied|ies)|climb(?:ed|s)?|fell|fall(?:s|ing)?|drop(?:ped|s)?|plung(?:e|ed|es)|slid|sink|sank|tumbl(?:e|ed)|skyrocket(?:ing|ed)?|trades? (?:up|down))\b',
+]
+macro = ['(?i)\b(?:inflation|interest rates?|the Fed\b|Federal Reserve|tariffs?|recession|GDP|jobs report)\b']
+
+# ---------------------------------------------------------------------------------------
+# Sentiment: a small finance tone lexicon written for this project. (The Loughran-McDonald
+# lists were considered, but their terms allow free use only for academic research, and
+# this is a brokerage product.) Tone is informational metadata only, never a hard filter.
+# ---------------------------------------------------------------------------------------
+[sentiment]
+positive = [
+  "beat", "beats", "exceeded", "surged", "surge", "soared", "soar", "rallied", "rally",
+  "jumped", "gains", "gained", "record", "raised", "raises", "upgrade", "upgraded",
+  "outperform", "strong", "stronger", "growth", "grew", "profit", "profitable", "boost",
+  "boosted", "optimistic", "bullish", "upside", "momentum", "win", "wins", "improved",
+]
+negative = [
+  "miss", "missed", "fell", "fall", "plunged", "plunge", "slid", "slump", "dropped",
+  "decline", "declined", "losses", "loss", "cut", "cuts", "downgrade", "downgraded",
+  "underperform", "weak", "weaker", "struggling", "struggles", "risk", "risks", "bearish",
+  "lawsuit", "layoffs", "warning", "concern", "concerns", "pressure", "headwinds",
+]
+negators = ["not", "no", "never", "without", "didn't", "doesn't", "isn't", "wasn't", "hardly"]
+negation_window = 3
+min_hits = 3            # fewer tone words than this -> neutral
+polarity_threshold = 0.25  # (pos - neg) / (pos + neg) beyond +/- this -> positive/negative
+mixed_min_each = 3      # at least this many of each, and polarity inside the band -> mixed

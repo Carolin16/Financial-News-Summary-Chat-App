@@ -21,9 +21,10 @@ export default function App() {
   return (
     <main className="app">
       <header>
-        <h1>Financial News Chat</h1>
+        <h1>Market News Assistant</h1>
         <p className="muted">
-          Answers are summaries of the news dataset, with sources. Not investment advice.
+          Ask about companies in the news, like Apple, Nvidia or Intel. Every answer is summarised
+          from the articles and links to its sources.
         </p>
       </header>
 

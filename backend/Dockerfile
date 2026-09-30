@@ -9,15 +9,21 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY pyproject.toml ./
-COPY src ./src
+# Built from the repo root (compose and Railway), so the dataset outside backend/ is reachable.
+COPY backend/pyproject.toml ./
+COPY backend/src ./src
 RUN pip install .
 
 # Bake the BM25 model and tokenizer into the image: no downloads at startup or query time.
 RUN python -c "from fastembed import SparseTextEmbedding; SparseTextEmbedding('Qdrant/bm25')" \
     && python -c "import tiktoken; tiktoken.get_encoding('cl100k_base')"
 
-COPY scripts ./scripts
+COPY backend/scripts ./scripts
+
+# Bake the dataset in: platforms that build each service alone (e.g. Railway) can't mount it,
+# and offline indexing (`chat-index`) reads it from here.
+COPY data/stock_news.json /data/stock_news.json
+ENV DATA_PATH=/data/stock_news.json
 
 RUN useradd --create-home --uid 1000 app && chown -R app /app/.cache
 USER app

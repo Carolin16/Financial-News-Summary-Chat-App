@@ -13,18 +13,17 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
+    # Repo-root context so the image can include data/stock_news.json (see backend/Dockerfile).
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     env_file:
       - path: .env
         required: false
     environment:
       QDRANT_URL: http://qdrant:6333
+      # Pinned so a local .env (which points at ../data for non-Docker runs) can't override it.
       DATA_PATH: /data/stock_news.json
-      # Committed LLM enrichment results; indexing in Docker reuses them (no LLM calls).
-      ENRICHMENT_CACHE_PATH: /data/enrichment_cache.json
-    volumes:
-      # dataset lives outside the backend build context, so mount it read-only
-      - ./data:/data:ro
     ports:
       - "${API_PORT:-8000}:8000"
     depends_on:

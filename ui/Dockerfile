@@ -10,7 +10,10 @@ RUN npm run build
 
 FROM nginx:1.29-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# The nginx image renders templates at startup, substituting only variables that are set,
+# so nginx's own $host/$uri stay intact. The default keeps docker compose working.
+ENV BACKEND_URL=http://backend:8000
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80

@@ -32,6 +32,16 @@ PARTIAL_SOURCES = (
     "details as lower-confidence."
 )
 
+# Every constant message above; they are app wording, never claims to verify.
+FIXED_MESSAGES: tuple[str, ...] = (
+    NOT_ADVICE,
+    NO_DATES,
+    NO_GROUNDED_ANSWER,
+    OUT_OF_SCOPE,
+    ANSWER_UNAVAILABLE,
+    PARTIAL_SOURCES,
+)
+
 
 def live_data_notice(company: str | None, metric: str) -> str:
     """Explains that a live figure (price, market cap) cannot be provided."""

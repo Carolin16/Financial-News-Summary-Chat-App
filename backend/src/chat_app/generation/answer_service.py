@@ -1,9 +1,4 @@
-"""Answers one question end to end: route -> retrieve -> summarise -> verify -> frame.
-
-The service applies the answering rules that must hold regardless of what the LLM writes:
-fixed notices for advice, timing, live data and thin coverage, and grounding verification
-of the generated text before it is shown as final.
-"""
+"""Answers questions using only the news articles, and drops any claim they do not support."""
 
 import logging
 import time
@@ -32,13 +27,14 @@ from chat_app.retrieval.strategy import CompanyFirstRetrieval
 
 logger = logging.getLogger(__name__)
 
-# Intents whose answers must end with the not-advice statement.
+# Advice or prediction questions ("Should I buy?", "Will it go up?") end with a not-advice notice.
 _ADVICE_LIKE = frozenset({Intent.ADVICE, Intent.PREDICTION})
+# How many top companies to list when we answer "what happened yesterday?" with coverage.
 _COVERAGE_SUMMARY_SIZE = 7
 
 
 class AnswerService:
-    """Coordinates the query pipeline and emits `AnswerEvent`s for streaming."""
+    """Runs each question through the answer pipeline and streams events to the client."""
 
     def __init__(
         self,
@@ -49,7 +45,7 @@ class AnswerService:
         registry: TickerRegistry,
         scope_guard: ScopeGuard,
     ) -> None:
-        """Wire collaborators; all are replaceable (e.g. fakes in tests)."""
+        """Store the pipeline's parts; each can be swapped (e.g. for fakes in tests)."""
         self._scope_guard = scope_guard
         self._analyzer = analyzer
         self._retrieval = retrieval
@@ -58,10 +54,13 @@ class AnswerService:
         self._registry = registry
 
     async def answer(self, question: str) -> AsyncIterator[AnswerEvent]:
-        """Yield meta, sources, draft deltas, and finally the verified answer."""
+        """Stream how the question was read, its sources, checked lines, then the final answer."""
         started = time.perf_counter()
+        # Step 1: understand the question (which companies, what kind of question).
         plan = self._analyzer.analyze(question)
+        # Step 2: check how much news we have on each company.
         reports = [self._coverage.assess(t) for t in plan.tickers]
+        # Let the screen show how we read the question before the answer arrives.
         yield MetaEvent(intent=plan.intent, tickers=plan.tickers, coverage=reports)
 
         log = _QueryLog(question=question, plan=plan)
@@ -69,39 +68,55 @@ class AnswerService:
             if isinstance(event, FinalEvent):
                 log.removed = event.removed_sentences
             yield event
+        # Record this query (sources used, time taken, tokens) in the logs.
         log.emit(started)
 
     async def _respond(
         self, question: str, plan: QueryPlan, reports: list[CoverageReport], log: "_QueryLog"
     ) -> AsyncIterator[AnswerEvent]:
+        """Pick the right kind of answer, stopping early when no LLM summary is needed."""
+        # Not about financial news? Politely decline without searching or calling the LLM.
         if not plan.clearly_in_scope and not await self._scope_guard.is_in_scope(question):
             log.out_of_scope = True
             yield _final([], messages.OUT_OF_SCOPE, [])
             return
 
+        # Articles have no reliable dates, so for "yesterday" questions show what we cover instead.
         if plan.intent is Intent.TIMING and not plan.tickers:
             yield self._timing_answer()
             return
 
+        # A live figure can't come from dated articles, and any figure the LLM added next to
+        # the notice would read as the current one, so answer with the notice alone.
+        if plan.intent is Intent.LIVE_DATA:
+            yield _final(self._leading_notices(plan, reports), body="", citations=[])
+            return
+
+        # We have no news on any company asked about, so say that rather than guess.
         uncovered = [r for r in reports if r.level is CoverageLevel.NONE]
         if reports and len(uncovered) == len(reports):
             notices = [messages.coverage_notice(r, self._name(r.ticker)) or "" for r in reports]
             yield _final(notices, body="", citations=[])
             return
 
+        # Warnings to show above the answer, e.g. "coverage of IBM is limited".
         before = self._leading_notices(plan, reports)
         try:
+            # Step 3: search the news, preferring articles mainly about these companies.
             retrieved = await self._retrieval.fetch(question, plan.tickers, plan.intent)
         except EmbeddingError as error:
+            # Search is unavailable, so show an error instead of answering without sources.
             logger.exception("retrieval failed")
             yield ErrorEvent(message=str(error))
             yield _final(before, messages.ANSWER_UNAVAILABLE, [])
             return
         log.chunk_ids = [r.chunk.chunk_id for r in retrieved]
+        # Found nothing relevant, so say so instead of asking the LLM to make something up.
         if not retrieved:
             yield _final(before, messages.NO_GROUNDED_ANSWER, [])
             return
 
+        # Number the sources [1], [2], ... so the answer can point to each one.
         sources = number_sources(retrieved)
         yield SourcesEvent(sources=[_numbered(s) for s in sources])
         request = SummaryRequest(
@@ -111,6 +126,8 @@ class AnswerService:
             coverage_guidance=self._coverage_guidance(reports),
         )
 
+        # Step 4: the LLM writes the answer piece by piece. Each finished line is checked
+        # against the sources before it is shown. `pending` is the line not finished yet.
         draft: list[str] = []
         pending = ""
         try:
@@ -121,13 +138,16 @@ class AnswerService:
                     if (shown := _verified_line(line, sources)) is not None:
                         yield DeltaEvent(text=shown + "\n")
         except LlmError as error:
+            # The LLM failed, so show an error instead of half an answer.
             logger.exception("generation failed")
             yield ErrorEvent(message=str(error))
             yield _final(before, messages.ANSWER_UNAVAILABLE, [])
             return
 
+        # Check the last line too, since it has no line break to trigger the check above.
         if pending and (shown := _verified_line(pending, sources)) is not None:
             yield DeltaEvent(text=shown)
+        # Step 5: check the whole answer once more and send the final, cleaned version.
         report = verify_answer("".join(draft), sources)
         yield self._verified_final(plan, before, report, sources)
 
@@ -138,13 +158,18 @@ class AnswerService:
         report: GroundingReport,
         sources: Sequence[Source],
     ) -> FinalEvent:
+        """Build the final answer from the checked draft, adding closing notices as needed."""
+        # Show only the sources the answer actually used.
         by_number = {s.number: s for s in sources}
         cited = [by_number[n] for n in sorted(report.cited_numbers)]
         after = []
+        # Add a warning if any source used was a paywalled or partial article.
         if any(s.retrieved.chunk.is_stub for s in cited):
             after.append(messages.PARTIAL_SOURCES)
+        # Add "not investment advice" to buy/sell and prediction answers.
         if plan.intent in _ADVICE_LIKE:
             after.append(messages.NOT_ADVICE)
+        # If every line failed the check, say we have no answer backed by the news.
         body = messages.NO_GROUNDED_ANSWER if report.is_empty else report.text
         return _final(
             before,
@@ -155,12 +180,15 @@ class AnswerService:
         )
 
     def _leading_notices(self, plan: QueryPlan, reports: list[CoverageReport]) -> list[str]:
+        """Caveats shown above the answer: no live data, no dates, thin coverage."""
         notices = []
+        # Questions like "current market cap" need live data the news doesn't have.
         if plan.intent is Intent.LIVE_DATA:
             company = self._name(plan.tickers[0]) if plan.tickers else None
             notices.append(messages.live_data_notice(company, plan.live_metric or ""))
         if plan.intent is Intent.TIMING:
             notices.append(messages.NO_DATES)
+        # Add a note for each company we have little or no news on.
         for report in reports:
             notice = messages.coverage_notice(report, self._name(report.ticker))
             if notice:
@@ -168,6 +196,7 @@ class AnswerService:
         return notices
 
     def _coverage_guidance(self, reports: list[CoverageReport]) -> str:
+        """Tell the LLM not to pad answers about thinly covered companies."""
         return "\n".join(
             messages.coverage_guidance(r, self._name(r.ticker))
             for r in reports
@@ -175,6 +204,7 @@ class AnswerService:
         )
 
     def _timing_answer(self) -> FinalEvent:
+        """Explain that dates can't be verified and list the most-covered companies instead."""
         lines = [
             f"- {self._name(r.ticker)}: {r.primary_articles} articles"
             for r in self._coverage.most_covered(_COVERAGE_SUMMARY_SIZE, self._registry.tickers)
@@ -187,24 +217,26 @@ class AnswerService:
         return _final([messages.NO_DATES], body, [])
 
     def _name(self, ticker: str) -> str:
+        """Company name for a ticker, for user-facing wording."""
         return self._registry.name_for(ticker)
 
 
 def _verified_line(line: str, sources: Sequence[Source]) -> str | None:
-    """A completed draft line as it may be shown while streaming, or None to withhold it.
-
-    Lines are verified before the user sees them, so an ungrounded claim (a figure not in
-    its sources, an uncited statement, an off-topic answer) never appears even briefly.
-    """
+    """Return the line if its sources back it up, or None so it never appears on screen."""
     if not line.strip():
-        return ""  # keep paragraph breaks
+        return ""  # empty lines are paragraph breaks, keep them
     return verify_answer(line, sources).text or None
 
 
 def _numbered(source: Source) -> NumberedCitation:
+    """The citation as the client sees it: its [n] number, title, link and passage ID."""
     citation = source.citation
     return NumberedCitation(
-        number=source.number, title=citation.title, link=citation.link, is_partial=citation.is_stub
+        number=source.number,
+        title=citation.title,
+        link=citation.link,
+        is_partial=citation.is_stub,
+        chunk_id=source.retrieved.chunk.chunk_id,
     )
 
 
@@ -215,6 +247,7 @@ def _final(
     after: list[str] | None = None,
     removed: int = 0,
 ) -> FinalEvent:
+    """Join notices above, the body, and notices below into one final answer."""
     after = after or []
     parts = [*before, body, *after]
     return FinalEvent(
@@ -226,9 +259,10 @@ def _final(
 
 
 class _QueryLog:
-    """Accumulates the per-query structured log line."""
+    """Collects what happened during one query and writes it as one structured log line."""
 
     def __init__(self, question: str, plan: QueryPlan) -> None:
+        """Start an empty record; fields are filled in as the pipeline runs."""
         self.question = question
         self.plan = plan
         self.chunk_ids: list[str] = []
@@ -237,6 +271,7 @@ class _QueryLog:
         self.out_of_scope = False
 
     def emit(self, started: float) -> None:
+        """Log the query, sources used, latency, token usage and removed sentences."""
         logger.info(
             "query answered",
             extra={

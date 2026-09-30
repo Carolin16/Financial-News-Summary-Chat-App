@@ -1,4 +1,4 @@
-"""Writes chunks to Qdrant: idempotent (deterministic IDs) and incremental (skip unchanged)."""
+"""Saves chunks to Qdrant, safe to re-run: only new or changed chunks are re-embedded."""
 
 import hashlib
 import logging
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class IndexReport:
-    """Outcome of one indexing run."""
+    """How many chunks one run wrote, left alone, and deleted."""
 
     written: int
     unchanged: int
@@ -31,7 +31,7 @@ class IndexReport:
 
 
 class QdrantChunkIndex:
-    """`ChunkIndex` that stores dense + BM25 vectors side by side for hybrid search."""
+    """Stores each chunk as a meaning vector plus a keyword vector, so search can use both."""
 
     def __init__(
         self,
@@ -40,18 +40,18 @@ class QdrantChunkIndex:
         embedder: EmbeddingProvider,
         sparse_encoder: Bm25SparseEncoder,
     ) -> None:
-        """Bind the index to a collection; the collection is created on first use."""
+        """Remember which Qdrant collection to use (it is created on first sync if missing)."""
         self._client = client
         self._collection = collection
         self._embedder = embedder
         self._sparse = sparse_encoder
 
     def upsert(self, chunks: Sequence[Chunk]) -> int:
-        """Write new or changed chunks; return how many were (re)embedded."""
+        """Save new or changed chunks and return how many were embedded."""
         return self.sync(chunks).written
 
     def sync(self, chunks: Sequence[Chunk]) -> IndexReport:
-        """Make the collection match `chunks`: embed only what changed, drop stale points."""
+        """Make Qdrant match the given chunks: add or update what changed, delete what is gone."""
         ensure_collection(self._client, self._collection, self._embedder.dimensions)
         hashes = {c.chunk_id: _content_hash(c) for c in chunks}
         stored = self._stored_hashes(list(hashes))
@@ -64,6 +64,7 @@ class QdrantChunkIndex:
         return report
 
     def _write(self, chunks: Sequence[Chunk], hashes: dict[str, str]) -> None:
+        """Embed the chunks both ways and save them, replacing any older copy with the same ID."""
         texts = [c.contextualized_text for c in chunks]
         dense = self._embedder.embed(texts)
         sparse = self._sparse.encode_documents(texts)
@@ -78,13 +79,14 @@ class QdrantChunkIndex:
         self._client.upsert(self._collection, points=points, wait=True)
 
     def _stored_hashes(self, ids: list[str]) -> dict[str, str]:
+        """Fetch the fingerprint Qdrant already holds for each chunk, to spot what changed."""
         records = self._client.retrieve(
             self._collection, ids=ids, with_payload=[CONTENT_HASH_FIELD], with_vectors=False
         )
         return {str(r.id): str((r.payload or {}).get(CONTENT_HASH_FIELD)) for r in records}
 
     def _remove_stale(self, chunks: Sequence[Chunk]) -> int:
-        """Delete points whose article left the dataset or now has fewer chunks."""
+        """Delete chunks whose article was removed or now splits into fewer chunks."""
         keep = {c.chunk_id for c in chunks}
         stale: list[models.ExtendedPointId] = []
         offset: models.ExtendedPointId | None = None
@@ -103,6 +105,6 @@ class QdrantChunkIndex:
 
 
 def _content_hash(chunk: Chunk) -> str:
-    # Metadata is part of the hash so re-enrichment (e.g. new tickers) refreshes payloads.
+    """Fingerprint of a chunk's text and tags, so a change to either triggers a rewrite."""
     material = chunk.contextualized_text + chunk.metadata.model_dump_json() + str(chunk.is_stub)
     return hashlib.sha256(material.encode("utf-8")).hexdigest()

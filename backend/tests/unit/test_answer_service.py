@@ -152,12 +152,16 @@ async def test_timing_question_without_company_is_answered_without_llm():
     assert retrieval.calls == [] and summarizer.requests == []
 
 
-async def test_live_data_leads_with_unavailable_notice():
-    svc = service(FakeRetrieval(NVIDIA_CHUNKS[:1]), ScriptedSummarizer("Nvidia rose 1% [1]."))
-    result = final(await run(svc, "What's Nvidia's current market cap?"))
+async def test_live_data_is_answered_with_the_notice_alone():
+    retrieval = FakeRetrieval(NVIDIA_CHUNKS[:1])
+    summarizer = ScriptedSummarizer("Nvidia's market cap was $3 trillion [1].")
+    result = final(await run(service(retrieval, summarizer), "What's Nvidia's current market cap?"))
     assert result.answer.startswith(
         "I don't have live market data, and the articles don't state Nvidia's current market cap"
     )
+    # A dated figure beside the notice would read as the current one.
+    assert "$3 trillion" not in result.answer and not result.citations
+    assert retrieval.calls == [] and summarizer.requests == []
 
 
 async def test_limited_coverage_is_disclosed_and_llm_told_not_to_pad():

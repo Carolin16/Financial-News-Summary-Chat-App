@@ -1,12 +1,8 @@
-"""Punctuation folding shared by ingestion and answer verification.
+"""Replaces punctuation (curly quotes, long dashes, special spaces) with plain ASCII.
 
-Articles are folded when cleaned, and LLM output is folded before its numbers are checked
-against the sources, so both sides compare the same characters (e.g. a Unicode minus in an
-answer still matches the ASCII hyphen in the article).
-
-Only punctuation and space variants are folded. Letters (é, Ö, Korean) are never touched,
-and nothing is mapped to a digit, so folding can never create a number. Full NFKC is avoided
-for exactly that reason: it turns "²" into "2" and "½" into "1⁄2".
+Applied to both the articles and the LLM's answer, so numbers can be matched exactly
+(e.g. "−5%" in an answer matches "-5%" in an article). Letters and digits are never
+changed, so this can never create a number that wasn't there.
 """
 
 PUNCTUATION_FOLDS: dict[str, str] = {

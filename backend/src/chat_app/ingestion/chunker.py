@@ -1,9 +1,4 @@
-"""Sentence-aware recursive chunking with contextual headers.
-
-Short articles (the common case) stay whole. Longer ones are packed sentence by sentence up
-to the token budget, with a small sentence overlap so a fact split across a boundary is
-still retrievable; a single over-long sentence falls back to word-level splitting.
-"""
+"""Splits articles into search-sized pieces, each labelled with its title and companies."""
 
 from collections.abc import Callable
 
@@ -17,7 +12,7 @@ STUB_NOTE = "Note: partial article (paywalled or teaser); treat as low-confidenc
 
 
 class Chunker:
-    """Splits an article into `Chunk`s that each carry the article's context and metadata."""
+    """Splits an article into chunks."""
 
     def __init__(
         self,
@@ -26,14 +21,14 @@ class Chunker:
         encoding_name: str,
         company_name: Callable[[str], str],
     ) -> None:
-        """Configure the token budget (header included) and how tickers are displayed."""
+        """Set the chunk size limit, the overlap, and how to show company names."""
         self._max_tokens = max_tokens
         self._overlap = overlap_sentences
         self._encoding = tiktoken.get_encoding(encoding_name)
         self._company_name = company_name
 
     def chunk(self, article: Article) -> list[Chunk]:
-        """Return the article's chunks in reading order."""
+        """Return the article as one chunk if it fits, otherwise as several, in reading order."""
         header = self.build_header(article)
         body_budget = self._max_tokens - self._count(header + HEADER_SEPARATOR)
         if self._count(article.text) <= body_budget:
@@ -56,11 +51,7 @@ class Chunker:
         ]
 
     def build_header(self, article: Article) -> str:
-        """Context prepended to every chunk so each is interpretable on its own.
-
-        Titles matter: paywalled stubs often carry their key fact (e.g. a new price
-        target) only in the headline.
-        """
+        """Build the label (title, companies, stub note) put on top of every chunk."""
         lines = [f"Title: {article.title}"]
         if article.metadata.primary_tickers:
             lines.append(f"About: {self._describe(article.metadata.primary_tickers)}")
@@ -71,9 +62,11 @@ class Chunker:
         return "\n".join(lines)
 
     def _describe(self, tickers: list[str]) -> str:
+        """Turn tickers into readable text, e.g. "Intel (INTC), Nvidia (NVDA)"."""
         return ", ".join(f"{self._company_name(t)} ({t})" for t in tickers)
 
     def _pack(self, sentences: list[str], budget: int) -> list[str]:
+        """Fill each chunk with whole sentences until the next one would not fit."""
         units = [piece for s in sentences for piece in self._fit_sentence(s, budget)]
         chunks: list[list[str]] = []
         current: list[str] = []
@@ -87,14 +80,15 @@ class Chunker:
         return [" ".join(parts) for parts in chunks]
 
     def _overlap_tail(self, previous: list[str], next_unit: str, budget: int) -> list[str]:
+        """Repeat the last sentence of the previous chunk so facts split across chunks survive."""
         tail = previous[-self._overlap :] if self._overlap else []
-        # Drop the overlap if it would not leave room for the next unit.
+        # Skip the overlap if there would be no room left for the next sentence.
         if tail and self._count(" ".join([*tail, next_unit])) > budget:
             return []
         return tail
 
     def _fit_sentence(self, sentence: str, budget: int) -> list[str]:
-        """Split a sentence that alone exceeds the budget into word windows."""
+        """Break a sentence too long for one chunk into smaller pieces by words."""
         if self._count(sentence) <= budget:
             return [sentence]
         pieces: list[str] = []
@@ -109,4 +103,5 @@ class Chunker:
         return pieces
 
     def _count(self, text: str) -> int:
+        """Count tokens the same way the embedding model does."""
         return len(self._encoding.encode(text))

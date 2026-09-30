@@ -1,8 +1,4 @@
-"""Abstractions that the pipeline depends on (DIP).
-
-Concrete adapters (JSON file, Qdrant, OpenAI) implement these, so core logic and tests
-can swap them without touching callers. Protocols keep test fakes free of inheritance.
-"""
+"""Defines what each part of the app must do, so the tool behind it can be replaced easily."""
 
 from collections.abc import AsyncIterator, Sequence
 from typing import Protocol

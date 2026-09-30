@@ -42,6 +42,13 @@ def test_reference_queries_are_routed_correctly(analyzer, question, intent, tick
         ("Will Nvidia stock rise after earnings?", Intent.PREDICTION),
         ("What is the outlook for Intel shares?", Intent.PREDICTION),
         ("What is Microsoft's stock price right now?", Intent.LIVE_DATA),
+        # Without "current", a market cap is answered from what an article states.
+        ("What's Microsoft's market cap?", Intent.NEWS),
+        (
+            "Which quantum computing stocks will be the biggest AI winners of 2025?",
+            Intent.PREDICTION,
+        ),
+        ("Will Nvidia outperform the market?", Intent.PREDICTION),
         ("Did anyone downgrade Intel?", Intent.ANALYST_VIEW),
         ("Why did Netflix shares fall?", Intent.CAUSAL),
         ("Tell me about Amazon's union vote", Intent.NEWS),

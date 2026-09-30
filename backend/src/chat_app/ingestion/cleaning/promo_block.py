@@ -1,18 +1,4 @@
-"""Finds where a cross-promotion block ends.
-
-A marker such as "READ ALSO:" is followed by other articles' headlines, which often run
-straight into the real text with no punctuation ("…Analyst Ratings The Chinese startup may
-be…"). Ending the block at the next full stop would delete genuine content, so the end is
-the earliest of:
-
-* a known next marker (e.g. "Disclosure:"),
-* the configured word limit (a safety cap),
-* in *headline mode* (block starts in Title Case): the first lowercase content word, which
-  marks the switch to prose; the prose starts at the capitalised word before it (or at a
-  sentence opener such as "The" just before that),
-* in *sentence mode* (block starts in sentence case): the end of the sentence, or an
-  unpunctuated sentence boundary ("…tied to diversity It's part of…").
-"""
+"""Finds where a promo insert like "READ ALSO: ..." ends and the real article resumes."""
 
 import re
 from dataclasses import dataclass
@@ -41,17 +27,17 @@ class _Token:
 
 
 class PromoBlockScanner:
-    """Computes the end offset of a promo block that starts at a marker."""
+    """Works out where a promo block stops, so only the promo is cut and not the article."""
 
     def __init__(self, config: PromoBlockConfig) -> None:
-        """Configure word lists and limits (all from the rules file)."""
+        """Load the word lists and limits from the rules file."""
         self._config = config
         self._connectors = {c.lower() for c in config.connectors}
         self._openers = set(config.sentence_openers)
         self._end_markers = [re.compile(re.escape(m)) for m in config.end_markers]
 
     def block_end(self, text: str, marker_end: int, allow_foreign: bool = False) -> int:
-        """Offset where the promo block that begins before `marker_end` stops."""
+        """Return the position where the promo ends: the earliest of marker, word cap, or prose."""
         tokens = [_Token(m.start(), m.end(), m.group()) for m in _TOKEN.finditer(text, marker_end)][
             : self._config.max_words
         ]
@@ -65,15 +51,18 @@ class PromoBlockScanner:
         return min(c for c in candidates if c is not None)
 
     def _next_end_marker(self, text: str, start: int, limit: int) -> int | None:
+        """Position of the next known end marker, such as "Disclosure:", if there is one."""
         found = [m.start() for p in self._end_markers if (m := p.search(text, start, limit))]
         return min(found, default=None)
 
     def _is_headline(self, tokens: list[_Token]) -> bool:
+        """True if the promo starts in Title Case, i.e. it is a list of headlines."""
         content = [t.core for t in tokens if t.core and t.core.lower() not in self._connectors]
         probe = content[: self._config.title_case_probe_words]
         return bool(probe) and all(w[0].isupper() or w[0].isdigit() for w in probe)
 
     def _headline_end(self, tokens: list[_Token], allow_foreign: bool) -> int:
+        """End a headline list at the first ordinary lowercase word, where prose begins."""
         index = 0
         while index < len(tokens):
             word = tokens[index].core
@@ -86,17 +75,18 @@ class PromoBlockScanner:
         return tokens[-1].end
 
     def _is_prose_word(self, word: str) -> bool:
+        """True for a lowercase word that isn't a small linking word like "and" or "of"."""
         return bool(word) and word[0].islower() and word.lower() not in self._connectors
 
     def _prose_start(self, tokens: list[_Token], index: int) -> int:
-        """Index of the token that begins the prose sentence containing `tokens[index]`."""
+        """Step back to the first word of the article sentence, e.g. "The" in "The company..."."""
         start = index - 1 if index > 0 and tokens[index - 1].core[:1].isupper() else index
         if start > 0 and tokens[start - 1].core in self._openers:
             start -= 1
         return start
 
     def _skip_foreign_run(self, tokens: list[_Token], index: int) -> int:
-        """Advance past a non-English headline to where Title Case headlines resume."""
+        """Skip over a non-English headline until English Title Case headlines start again."""
         for next_index in range(index + 1, len(tokens) - 1):
             pair = tokens[next_index].core, tokens[next_index + 1].core
             if all(w[:1].isupper() for w in pair) and not any(_is_foreign(w) for w in pair):
@@ -104,6 +94,7 @@ class PromoBlockScanner:
         return len(tokens)
 
     def _sentence_end(self, text: str, tokens: list[_Token]) -> int:
+        """End a one-line promo at its full stop, or where a new sentence clearly begins."""
         start = tokens[0].start
         sentence_end = next((end for s, end in sentence_spans(text) if s <= start < end), None)
         for index in range(self._config.min_words_before_boundary, len(tokens)):
@@ -112,13 +103,7 @@ class PromoBlockScanner:
         return sentence_end if sentence_end is not None else tokens[-1].end
 
     def _starts_unpunctuated_sentence(self, tokens: list[_Token], index: int) -> bool:
-        """True where prose begins right after a headline with no punctuation between.
-
-        E.g. "...tied to diversity It's part of" or "...toward the president Tech companies
-        have". The word before must be a lowercase content word (so "a Trump critic" or
-        "backed by Jeff Bezos" don't count), and the capitalised word must be a sentence
-        opener or be followed by a lowercase word (ruling out proper-noun runs).
-        """
+        """True if a new sentence starts here even though the previous one has no full stop."""
         previous, current = tokens[index - 1], tokens[index]
         after_lowercase_word = (
             not previous.ends_clause
@@ -134,5 +119,5 @@ class PromoBlockScanner:
 
 
 def _is_foreign(word: str) -> bool:
-    """True if the word contains a non-ASCII letter (e.g. Spanish "qué", "compró")."""
+    """True if the word has accented or non-English letters, e.g. "qué"."""
     return any(not ch.isascii() for ch in _NON_ASCII_LETTER.findall(word))

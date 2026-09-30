@@ -429,6 +429,12 @@ category = "image_credit"
 pattern = '\b([A-Z][\w.&-]*(?:\s+(?:[A-Z][\w.&-]*|and|of|the)){0,4})\s+Image [Ss]ource:\s*\1(?!\w)'
 
 [[noise_rules]]
+name = "credit_photo_agency"
+category = "image_credit"
+# "Intel - Photo: Victor J. Blue/Bloomberg"
+pattern = '-?\s*Photo:\s*[^/()]{1,50}/[A-Z]\w+'
+
+[[noise_rules]]
 name = "credit_photo_parenthetical"
 category = "image_credit"
 pattern = '\(Photo:\s*[^)]{1,60}\)'

@@ -1,16 +1,17 @@
-"""Known companies and how they are referred to in text.
+"""List of known companies and the names they go by (e.g. "Google" or "GOOG" → GOOGL).
 
-Loaded from a JSON data file so tracking a new company is a data change, not a code change.
-Used offline (canonicalising enrichment output) and at query time (spotting companies in
-the user's question).
+Used to spot which companies an article or a user's question is about. Companies are
+listed in `config/tickers.json`, so adding one needs no code change.
 """
 
 import json
 import re
 from collections import Counter
+from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Company(BaseModel):
@@ -18,6 +19,30 @@ class Company(BaseModel):
 
     name: str
     aliases: list[str]
+    products: list[str] = Field(
+        default_factory=list, description="Product names that imply the company (exact case)."
+    )
+    indexed: bool = Field(
+        default=False, description="True if the dataset has a feed key for this company."
+    )
+
+
+class MentionForm(StrEnum):
+    """How a company was referred to."""
+
+    NAME = "name"
+    PRODUCT = "product"
+    TICKER = "ticker"
+
+
+@dataclass(frozen=True)
+class Mention:
+    """One reference to a tracked company in a text."""
+
+    ticker: str
+    start: int
+    end: int
+    form: MentionForm
 
 
 class TickerRegistry:
@@ -34,6 +59,11 @@ class TickerRegistry:
         self._patterns = {
             ticker: _mention_pattern(ticker, company) for ticker, company in self._companies.items()
         }
+        self._product_patterns = {
+            ticker: re.compile(rf"\b(?:{'|'.join(map(re.escape, company.products))})\b")
+            for ticker, company in self._companies.items()
+            if company.products
+        }
 
     @classmethod
     def from_json(cls, path: Path) -> "TickerRegistry":
@@ -45,6 +75,27 @@ class TickerRegistry:
     def tickers(self) -> list[str]:
         """All tracked tickers."""
         return list(self._companies)
+
+    @property
+    def indexed_tickers(self) -> list[str]:
+        """Tickers the dataset has a feed key for (the others appear only as mentions)."""
+        return [t for t, c in self._companies.items() if c.indexed]
+
+    def mentions(self, text: str) -> list[Mention]:
+        """Every reference to a tracked company in `text`, in reading order."""
+        found: list[Mention] = []
+        for ticker, pattern in self._patterns.items():
+            for match in pattern.finditer(text):
+                form = (
+                    MentionForm.TICKER if match.group().lstrip("$") == ticker else MentionForm.NAME
+                )
+                found.append(Mention(ticker, match.start(), match.end(), form))
+        for ticker, pattern in self._product_patterns.items():
+            found.extend(
+                Mention(ticker, m.start(), m.end(), MentionForm.PRODUCT)
+                for m in pattern.finditer(text)
+            )
+        return sorted(found, key=lambda m: m.start)
 
     def company_terms(self) -> list[str]:
         """Every ticker and alias, e.g. for detecting company mentions in text."""

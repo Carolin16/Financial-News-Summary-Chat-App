@@ -19,14 +19,14 @@ class Sentiment(StrEnum):
 
 
 class ArticleType(StrEnum):
-    """Editorial form of an article; lets retrieval down-rank promotional formats."""
+    """Editorial form of an article; it adjusts relevance thresholds (e.g. listicles)."""
 
     NEWS = "news"
-    ANALYSIS = "analysis"
-    OPINION = "opinion"
+    ANALYST_NOTE = "analyst_note"
+    MARKET_WRAP = "market_wrap"
     PRESS_RELEASE = "press_release"
     LISTICLE = "listicle"
-    OTHER = "other"
+    OPINION = "opinion"
 
 
 class EventType(StrEnum):
@@ -37,6 +37,7 @@ class EventType(StrEnum):
     PRICE_TARGET = "price_target"
     STOCK_MOVE = "stock_move"
     PRODUCT = "product"
+    DEAL = "deal"
     PARTNERSHIP = "partnership"
     LEGAL_REGULATORY = "legal_regulatory"
     LEADERSHIP = "leadership"
@@ -55,14 +56,34 @@ class RawArticle(BaseModel):
     full_text: str
 
 
+class RelevanceTier(StrEnum):
+    """How central a company is to an article."""
+
+    PRIMARY = "primary"  # the article is about it
+    MENTIONED = "mentioned"  # named in the article's own prose
+    INCIDENTAL = "incidental"  # only inside long enumerations; kept for audit, not filtered on
+
+
 class ArticleMetadata(BaseModel):
     """Content-derived metadata. Tickers come from the text, never from the source key."""
 
     primary_tickers: list[str] = Field(default_factory=list)
     mentioned_tickers: list[str] = Field(default_factory=list)
+    incidental_tickers: list[str] = Field(default_factory=list)
+    tiers: dict[str, RelevanceTier] = Field(default_factory=dict)
+    salience: dict[str, float] = Field(
+        default_factory=dict, description="Rule-based salience score per company, 0-1."
+    )
     event_types: list[EventType] = Field(default_factory=list)
-    sentiment: Sentiment = Sentiment.NEUTRAL
-    article_type: ArticleType = ArticleType.OTHER
+    sentiment: Sentiment = Field(
+        default=Sentiment.NEUTRAL,
+        description="Article-level tone. Informational only: never a default filter, and "
+        "unreliable for articles comparing several companies.",
+    )
+    article_type: ArticleType = ArticleType.NEWS
+    article_type_cue: str | None = Field(
+        default=None, description="The text that matched the article-type rule, for audit."
+    )
 
     @property
     def is_relevant(self) -> bool:
@@ -79,8 +100,8 @@ class Article(BaseModel):
     text: str
     source_keys: list[str] = Field(
         default_factory=list,
-        description="Source-file ticker keys the article was filed under. Provenance only: "
-        "never used to decide relevance.",
+        description="Tickers this article was listed under in the source file. "
+        "Only a record of where it came from. It is never used to decide relevance.",
     )
     merged_links: list[str] = Field(
         default_factory=list,

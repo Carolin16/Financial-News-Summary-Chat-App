@@ -1,10 +1,12 @@
 """Composition root for the API: builds the object graph once per process."""
 
 import asyncio
+from collections.abc import Callable
 
 from qdrant_client import AsyncQdrantClient
 
 from chat_app.config.settings import Settings
+from chat_app.core.interfaces import Retriever
 from chat_app.core.ticker_registry import TickerRegistry
 from chat_app.generation.answer_service import AnswerService
 from chat_app.generation.llm_client import OpenAILlmClient
@@ -27,6 +29,10 @@ QUERY_EXPANSIONS: dict[str, str] = {
     Intent.ADVICE: "analyst rating outlook",
     Intent.PREDICTION: "analyst outlook expects",
 }
+
+
+# Decorates the vector-store retriever, e.g. an eval double that edits or drops passages.
+RetrieverWrapper = Callable[[Retriever], Retriever]
 
 
 class VectorStoreUnavailableError(RuntimeError):
@@ -57,31 +63,56 @@ class Container:
             return self._service
         async with self._lock:
             if self._service is None:
-                try:
-                    chunks = await load_chunks(self.qdrant, self.settings.qdrant_collection)
-                except Exception as error:  # any transport/client failure: store unreachable
-                    raise VectorStoreUnavailableError(str(error)) from error
-                service = self._build_service(
-                    CoverageIndex(chunks, self.settings.full_coverage_min_articles)
-                )
-                if not chunks:
+                coverage = await self._load_coverage()
+                service = self._assemble(coverage, self.build_retrieval())
+                if coverage.total_articles == 0:
                     return service
                 self._service = service
         return self._service
 
-    def _build_service(self, coverage: CoverageIndex) -> AnswerService:
-        retriever = QdrantHybridRetriever(
+    async def build_answer_service(
+        self, retriever_wrapper: RetrieverWrapper | None = None
+    ) -> AnswerService:
+        """Build a fresh, uncached service; `retriever_wrapper` decorates its retriever.
+
+        Lets evaluation swap in a retriever that edits or removes passages while every
+        other part of the pipeline stays exactly as served.
+        """
+        return self._assemble(await self._load_coverage(), self.build_retrieval(retriever_wrapper))
+
+    def build_retrieval(
+        self, retriever_wrapper: RetrieverWrapper | None = None, top_k: int | None = None
+    ) -> CompanyFirstRetrieval:
+        """The company-first retrieval policy over the hybrid retriever, optionally wrapped.
+
+        `top_k` overrides the served depth, e.g. to measure recall at a different k.
+        """
+        retriever: Retriever = QdrantHybridRetriever(
             self.qdrant,
             self.settings.qdrant_collection,
             self._embedder,
             self._sparse,
             self.settings.retrieval_prefetch_k,
         )
+        if retriever_wrapper is not None:
+            retriever = retriever_wrapper(retriever)
+        return CompanyFirstRetrieval(
+            retriever, top_k or self.settings.retrieval_top_k, QUERY_EXPANSIONS
+        )
+
+    async def _load_coverage(self) -> CoverageIndex:
+        """Coverage counts from every indexed chunk."""
+        try:
+            chunks = await load_chunks(self.qdrant, self.settings.qdrant_collection)
+        except Exception as error:  # any transport/client failure: store unreachable
+            raise VectorStoreUnavailableError(str(error)) from error
+        return CoverageIndex(chunks, self.settings.full_coverage_min_articles)
+
+    def _assemble(self, coverage: CoverageIndex, retrieval: CompanyFirstRetrieval) -> AnswerService:
+        """Wire the answer service from its parts."""
         return AnswerService(
             analyzer=QueryAnalyzer(self.registry),
-            retrieval=CompanyFirstRetrieval(
-                retriever, self.settings.retrieval_top_k, QUERY_EXPANSIONS
-            ),
+            retrieval=retrieval,
             summarizer=LlmSummarizer(self._llm),
             coverage=coverage,
             registry=self.registry,
